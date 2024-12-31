@@ -36,7 +36,7 @@ const LandingPage = ({ navigation }: any) => {
       });
     } else {
       // Navigate to Home after the last screen
-      navigation.replace('Main');
+      navigation.replace('Survey');
     }
   }, [currentScreen]);
 

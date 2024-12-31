@@ -1,21 +1,168 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React from "react";
+import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 
-const LoginScreen = ({ navigation }: any) => {
+const LoginPage = ({ navigation }: any) => {
   return (
-    <View style={styles.container}>
-      <Text>Login Screen</Text>
-      <Button title="Skip Login" onPress={() => navigation.replace('Main')} />
+    <View style={styles.loginPage}>
+      {/* Logo */}
+      <Image
+        style={styles.logo}
+        source={require("../assets/logo_leaf.png")} // Update the path to your image
+        resizeMode="contain"
+      />
+      
+      {/* Title and Subtitle */}
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>Login or sign up</Text>
+        <Text style={styles.subtitle}>
+          Please select your preferred method{"\n"}to continue setting up your account
+        </Text>
+      </View>
+
+      {/* Buttons */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={styles.emailButton}
+          onPress={() => navigation.replace("HIW")} // Navigate to Main
+        >
+          <Text style={styles.emailButtonText}>Continue with Email</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.phoneButton}
+          onPress={() => navigation.replace("HIW")} // Navigate to Main
+        >
+          <Text style={styles.phoneButtonText}>Continue with Phone</Text>
+        </TouchableOpacity>
+        <View style={styles.socialButtons}>
+          <TouchableOpacity style={styles.socialButton}>
+            <Image
+              style={styles.socialIcon}
+              source={require("../assets/google-icon.png")} // Update the path to your Google icon
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.socialButton}>
+            <Image
+              style={styles.socialIcon}
+              source={require("../assets/apple-icon.png")} // Update the path to your Apple icon
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          If you are creating a new account,{" "}
+          <Text style={styles.linkText}>Terms & Conditions</Text> and{" "}
+          <Text style={styles.linkText}>Privacy Policy</Text> will apply.
+        </Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  loginPage: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fcfaf0",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 32,
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    marginTop: 40,
+  },
+  textContainer: {
+    alignItems: "center",
+    marginTop: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    fontFamily: "Inter-Bold",
+    color: "#1a1c29",
+  },
+  subtitle: {
+    fontSize: 15,
+    fontFamily: "Inter-Regular",
+    color: "#797979",
+    textAlign: "center",
+    lineHeight: 20,
+    marginTop: 8,
+  },
+  buttonsContainer: {
+    width: "100%",
+    alignItems: "center"
+  },
+  emailButton: {
+    backgroundColor: "#474d41",
+    height: 54,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 12,
+  },
+  emailButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "SF Pro",
+  },
+  phoneButton: {
+    backgroundColor: "#fff",
+    borderColor: "#d7d7d7",
+    borderWidth: 1,
+    height: 54,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 16,
+  },
+  phoneButtonText: {
+    color: "#1a1c29",
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "SF Pro",
+  },
+  socialButtons: {
+    flexDirection: "row",
+    gap: 12,
+    width: "100%",
+    justifyContent: "space-evenly",
+  },
+  socialButton: {
+    backgroundColor: "#fff",
+    borderColor: "#d7d7d7",
+    borderWidth: 1,
+    borderRadius: 14,
+    height: 54,
+    width: "45%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  socialIcon: {
+    width: 24,
+    height: 24,
+  },
+  footer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  footerText: {
+    fontSize: 12,
+    fontFamily: "SF Pro",
+    textAlign: "center",
+    color: "#797979",
+  },
+  linkText: {
+    textDecorationLine: "underline",
+    color: "#1a1c29",
   },
 });
 
-export default LoginScreen;
+export default LoginPage;
