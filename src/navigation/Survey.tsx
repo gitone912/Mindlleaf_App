@@ -129,8 +129,8 @@ const Survey = ({ navigation }: any) => {
           <Text style={styles.navigationButtonText}>Next</Text>
         </TouchableOpacity>
         {currentQuestionIndex > 0 && (
-          <TouchableOpacity style={styles.navigationButton} onPress={handleBack}>
-            <Text style={styles.navigationButtonText}>Back</Text>
+          <TouchableOpacity style={styles.navigationButtonBack} onPress={handleBack}>
+            <Text style={styles.navigationButtonTextBack}>Back</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -176,15 +176,15 @@ const styles = StyleSheet.create({
   },
   selectedOptionButton: {
     borderColor: '#333',
-    backgroundColor: '#FFF',
+    backgroundColor: "#474d41", // Dark background for selected option
+  },
+  selectedOptionText: {
+    color: '#FFF', // White text for selected option
+    fontWeight: '600',
   },
   optionText: {
     fontSize: 16,
     color: '#333',
-  },
-  selectedOptionText: {
-    color: '#000',
-    fontWeight: '600',
   },
   textInput: {
     borderWidth: 1,
@@ -204,22 +204,40 @@ const styles = StyleSheet.create({
   },
   navigationButtonsContainer: {
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 180, // Adjust height for spacing
+    alignItems: 'center', // Center the buttons
+    justifyContent: 'center',
+    marginVertical: 20,
+    gap: 10, // Reduce the space between buttons
   },
   navigationButton: {
-    backgroundColor: '#333',
+    backgroundColor: '#333', // Black background for Next button
     borderRadius: 25,
     paddingVertical: 15,
     paddingHorizontal: 50,
-    marginVertical: 10,
     alignItems: 'center',
   },
   navigationButtonText: {
     fontSize: 16,
-    color: '#FFF',
+    color: '#FFF', // White text for Next button
+  },
+  navigationButtonBack: {
+    backgroundColor: 'transparent', // Transparent background for Back button
+    borderWidth: 1, // Black border
+    borderColor: '#000',
+    borderRadius: 25,
+    paddingVertical: 15,
+    paddingHorizontal: 50,
+    alignItems: 'center',
+  },
+  navigationButtonBackText: {
+    fontSize: 16,
+    color: '#000', // Black text for Back button
+  },
+  navigationButtonTextBack: {
+    fontSize: 16,
+    color: 'black', // White text for Next button
   },
 });
+
 
 export default Survey;

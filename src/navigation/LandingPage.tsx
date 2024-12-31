@@ -2,67 +2,109 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, Animated } from 'react-native';
 
 const LandingPage = ({ navigation }: any) => {
-  const [currentScreen, setCurrentScreen] = useState(0); // Keeps track of which screen is active
-  const fadeAnim = useRef(new Animated.Value(0)).current; // For fade animation
-
-  const screens = [
-    { type: 'text', content: 'The mind is like a tree' },
-    { type: 'text', content: 'Each leaf is a thought, a memory, or an idea.' },
-    { type: 'text', content: 'And just like a tree,' },
-    { type: 'text', content: 'the mind needs nurturing to thrive.' },
-    { type: 'image', content: require('../assets/logo_new.png') }, // Logo
-    { type: 'logo_image', content: require('../assets/logo_leaf.png') }, // Leaf
-  ];
+  const [currentScreen, setCurrentScreen] = useState(0); // Tracks which screen is being displayed
+  const fadeAnims = useRef([
+    new Animated.Value(0), // Fade for text 1
+    new Animated.Value(0), // Fade for text 2
+    new Animated.Value(0), // Fade for text 3
+    new Animated.Value(0), // Fade for text 4
+  ]).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current; // For the logo and leaf fade animations
 
   useEffect(() => {
-    if (currentScreen < screens.length) {
-      // Fade in
+    if (currentScreen === 0) {
+      // Animate the first four text elements
+      fadeAnims.forEach((fadeAnim, index) => {
+        setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+        }, index * 1000); // Delay each animation by 1 second
+      });
+
+      // After all text animations, move to the next phase
+      setTimeout(() => {
+        setCurrentScreen(1);
+      }, fadeAnims.length * 1000 + 1000);
+    } else if (currentScreen === 1) {
+      // Logo fade-in and out
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 1000,
         useNativeDriver: true,
       }).start(() => {
-        // Wait for 2 seconds for text and 3 seconds for logo/leaf
         setTimeout(() => {
-          // Fade out
           Animated.timing(fadeAnim, {
             toValue: 0,
             duration: 1000,
             useNativeDriver: true,
           }).start(() => {
-            setCurrentScreen((prev) => prev + 1);
+            setCurrentScreen(2);
           });
-        }, currentScreen === 6 || currentScreen === 7 ? 2000 : 1500);
+        }, 2000);
       });
-    } else {
-      // Navigate to Home after the last screen
-      navigation.replace('Survey');
+    } else if (currentScreen === 2) {
+      // Leaf fade-in and out
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start(() => {
+            navigation.replace('Survey');
+          });
+        }, 2000);
+      });
     }
   }, [currentScreen]);
 
   const renderContent = () => {
-    const screen = screens[currentScreen];
-
-    if (!screen) return null; // Prevent accessing undefined elements
-
-    if (screen.type === 'text') {
-      return <Text style={styles.text}>{screen.content}</Text>;
-    } else if (screen.type === 'image') {
-      return <Image source={screen.content} style={styles.image} />;
-    } else if (screen.type === 'logo_image') {
-        return <Image source={screen.content} style={styles.logo_image} />;
-    } else {
-      return <View style={styles.blank} />;
+    if (currentScreen === 0) {
+      // Render all four text elements stacked vertically
+      return (
+        <View style={styles.textContainer}>
+          <Animated.Text style={[styles.text, { opacity: fadeAnims[0] }]}>
+            The mind is like a tree
+          </Animated.Text>
+          <Animated.Text style={[styles.text, { opacity: fadeAnims[1] }]}>
+            Each leaf is a thought, a memory, or an idea.
+          </Animated.Text>
+          <Animated.Text style={[styles.text, { opacity: fadeAnims[2] }]}>
+            And just like a tree,
+          </Animated.Text>
+          <Animated.Text style={[styles.text, { opacity: fadeAnims[3] }]}>
+            the mind needs nurturing to thrive.
+          </Animated.Text>
+        </View>
+      );
+    } else if (currentScreen === 1) {
+      // Render the logo
+      return (
+        <Animated.Image
+          source={require('../assets/logo_new.png')}
+          style={[styles.image, { opacity: fadeAnim }]}
+        />
+      );
+    } else if (currentScreen === 2) {
+      // Render the leaf
+      return (
+        <Animated.Image
+          source={require('../assets/logo_leaf.png')}
+          style={[styles.logoImage, { opacity: fadeAnim }]}
+        />
+      );
     }
+    return null;
   };
 
-  return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-        {renderContent()}
-      </Animated.View>
-    </View>
-  );
+  return <View style={styles.container}>{renderContent()}</View>;
 };
 
 const styles = StyleSheet.create({
@@ -71,9 +113,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FCFAF0',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  content: {
-    justifyContent: 'center',
+  textContainer: {
     alignItems: 'center',
   },
   text: {
@@ -81,21 +123,17 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#000',
     textAlign: 'center',
-    paddingHorizontal: 20,
+    marginBottom: 10,
   },
   image: {
     width: 150,
     height: 150,
     resizeMode: 'contain',
   },
-  logo_image: {
+  logoImage: {
     width: 80,
     height: 80,
     resizeMode: 'contain',
-  },
-  blank: {
-    height: '100%',
-    width: '100%',
   },
 });
 
