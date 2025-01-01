@@ -8,6 +8,14 @@ import LoginPage from './src/screens/LoginScreen';
 import HIW from './src/onboarding/HowItWorks1';
 import HIW2 from './src/onboarding/HowItWorks2';
 import HIW3 from './src/onboarding/HowItWorks3';
+import AskName from './src/onboarding/AskName';
+import AskNotification from './src/onboarding/AskNotification';
+import AskJournal from './src/onboarding/AskJournal';
+import ActionScreen from './src/screens/HomePageScreens/Actions';
+import MindScreen from './src/screens/HomePageScreens/Mind';
+import TherapyScreen from './src/screens/HomePageScreens/Therapy';
+import MoodScreen from './src/screens/HomePageScreens/Mood';
+
 
 const Stack = createStackNavigator();
 
@@ -21,7 +29,15 @@ const App = () => {
         <Stack.Screen name="HIW" component={HIW} />
         <Stack.Screen name="HIW2" component={HIW2} />
         <Stack.Screen name="HIW3" component={HIW3} />
+        <Stack.Screen name="AskName" component={AskName} />
+        <Stack.Screen name="AskNotification" component={AskNotification} />
+        <Stack.Screen name="AskJournal" component={AskJournal} />
         <Stack.Screen name="Main" component={MainNavigator} />
+
+        <Stack.Screen name="Action" component={ActionScreen} />
+        <Stack.Screen name="Mind" component={MindScreen} />
+        <Stack.Screen name="Therapy" component={TherapyScreen} />
+        <Stack.Screen name="Mood" component={MoodScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

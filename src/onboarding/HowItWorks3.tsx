@@ -38,7 +38,7 @@ const HIW3 = ({ navigation }: any) => {
       {/* Next Button */}
       <Pressable
         style={styles.nextButton}
-        onPress={() => navigation.navigate("Main")} // Replace with the next screen or functionality
+        onPress={() => navigation.navigate("AskName")} // Replace with the next screen or functionality
       >
         <Text style={styles.nextButtonText}>Next</Text>
       </Pressable>

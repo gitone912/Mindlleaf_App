@@ -1,31 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import Header from './Header';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+// Define screen types
+type RootStackParamList = {
+  Main: undefined;
+  Action: undefined;
+  Mind: undefined;
+  Therapy: undefined;
+  Mood: undefined;
+};
+
+// Define navigation prop type for HomeScreen
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
 const HomeScreen = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   const actions = [
-    { id: '1', title: 'Actions', image: require('../assets/actions.png') },
-    { id: '2', title: 'Mind', image: require('../assets/mind.png') },
-    { id: '3', title: 'Therapy', image: require('../assets/therapy.png') },
-    { id: '4', title: 'Mood', image: require('../assets/mood.png') },
+    { id: '1', title: 'Actions', image: require('../assets/actions.png'), screen: 'Action' },
+    { id: '2', title: 'Mind', image: require('../assets/mind.png'), screen: 'Mind' },
+    { id: '3', title: 'Therapy', image: require('../assets/therapy.png'), screen: 'Therapy' },
+    { id: '4', title: 'Mood', image: require('../assets/mood.png'), screen: 'Mood' },
   ];
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header Section */}
-      <Header points={206} />
-
-      {/* Greeting Section */}
       <View style={styles.greeting}>
         <Text style={styles.day}>Day 44</Text>
         <Text style={styles.title}>Hi, Ace</Text>
         <Text style={styles.subtitle}>These days you feel anxious.</Text>
       </View>
-
-      {/* Actions Section */}
       <View style={styles.actionsContainer}>
         {actions.map((action) => (
-          <TouchableOpacity key={action.id} style={styles.actionItem}>
+          <TouchableOpacity
+            key={action.id}
+            style={styles.actionItem}
+            onPress={() => navigation.navigate(action.screen as keyof RootStackParamList)}
+          >
             <Image source={action.image} style={styles.actionImage} />
             <Text style={styles.actionText}>{action.title}</Text>
           </TouchableOpacity>
@@ -43,7 +63,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     alignItems: 'center',
-    marginVertical: 55, // Increased space below header
+    marginVertical: 55,
   },
   day: {
     fontSize: 11,
@@ -71,15 +91,15 @@ const styles = StyleSheet.create({
   actionItem: {
     width: '50%',
     alignItems: 'center',
-    marginVertical: 30, // Increased vertical space between rows
+    marginVertical: 30,
   },
   actionImage: {
     width: 97,
     height: 97,
     borderRadius: 50,
     marginBottom: 10,
-    borderWidth: 2, // Creates the ring effect
-    borderColor: '#D4AF37', // Gold-like color for the border
+    borderWidth: 2,
+    borderColor: '#D4AF37',
   },
   actionText: {
     fontSize: 14,
