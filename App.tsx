@@ -33,14 +33,10 @@ const App = () => {
         <Stack.Screen name="AskNotification" component={AskNotification} />
         <Stack.Screen name="AskJournal" component={AskJournal} />
         <Stack.Screen name="Main" component={MainNavigator} />
-
-        <Stack.Screen name="Action" component={ActionScreen} />
-        <Stack.Screen name="Mind" component={MindScreen} />
-        <Stack.Screen name="Therapy" component={TherapyScreen} />
-        <Stack.Screen name="Mood" component={MoodScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
 
 export default App;

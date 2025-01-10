@@ -12,7 +12,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 // Define screen types
 type RootStackParamList = {
-  Main: undefined;
+  HomeMain: undefined;
   Action: undefined;
   Mind: undefined;
   Therapy: undefined;
@@ -20,18 +20,25 @@ type RootStackParamList = {
 };
 
 // Define navigation prop type for HomeScreen
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'HomeMain'>;
+
+// Define the structure of an action
+type Action = {
+  id: string;
+  title: string;
+  image: any; // Replace `any` with the correct type for your image assets if available
+  screen: keyof RootStackParamList; // This ensures `screen` is one of the keys in `RootStackParamList`
+};
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  const actions = [
+  const actions: Action[] = [
     { id: '1', title: 'Actions', image: require('../assets/actions.png'), screen: 'Action' },
     { id: '2', title: 'Mind', image: require('../assets/mind.png'), screen: 'Mind' },
     { id: '3', title: 'Therapy', image: require('../assets/therapy.png'), screen: 'Therapy' },
     { id: '4', title: 'Mood', image: require('../assets/mood.png'), screen: 'Mood' },
   ];
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.greeting}>
@@ -44,7 +51,7 @@ const HomeScreen = () => {
           <TouchableOpacity
             key={action.id}
             style={styles.actionItem}
-            onPress={() => navigation.navigate(action.screen as keyof RootStackParamList)}
+            onPress={() => navigation.navigate(action.screen)}
           >
             <Image source={action.image} style={styles.actionImage} />
             <Text style={styles.actionText}>{action.title}</Text>

@@ -1,11 +1,41 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import * as React from "react";
+import { Text, StyleSheet, Image, View, Pressable } from "react-native";
 
 const SessionScreen = () => {
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Session Screen</Text>
-      {/* Add Session screen UI here */}
+      <Text style={styles.header}></Text>
+      <Text style={styles.subHeader}>
+        Choose how you want to journal for today.
+      </Text>
+      <View style={styles.optionsGrid}>
+        <Image
+          style={[styles.optionImage, styles.leftImage]}
+          source={require("../assets/monologue.png")} // Replace with the correct image path
+        />
+        <Image
+          style={[styles.optionImage, styles.rightImage]}
+          source={require("../assets/dialogue.png")} // Replace with the correct image path
+        />
+        <Image
+          style={[styles.optionImage, styles.leftImage]}
+          source={require("../assets/type.png")} // Replace with the correct image path
+        />
+        <Image
+          style={[styles.optionImage, styles.rightImage]}
+          source={require("../assets/chat_ai.png")} // Replace with the correct image path
+        />
+        <Image
+          style={[styles.optionImage, styles.leftImage]}
+          source={require("../assets/prompt.png")} // Replace with the correct image path
+        />
+        <Image
+          style={[styles.optionImage, styles.rightImage]}
+          source={require("../assets/gratitude.png")} // Replace with the correct image path
+        />
+      </View>
     </View>
   );
 };
@@ -13,14 +43,66 @@ const SessionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: "#fcfaf0",
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  header: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#000",
+    marginTop: 50,
+    marginBottom: 10,
+  },
+  textButton: {
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: "Inter-Regular",
+    color: "#fff",
+    backgroundColor: "#474d41",
+    width: 33,
+    height: 33,
+    borderRadius: 16.5,
+    textAlign: "center",
+    textAlignVertical: "center", // Centers the text vertically
+    marginBottom: 20,
+  },
+  subHeader: {
+    fontSize: 16,
+    color: "#474d41",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  optionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    width: "100%",
+  },
+  optionImage: {
+    width: 120,
+    height: 143,
+    marginBottom: 1,
+  },
+  leftImage: {
+    marginLeft: 40,
+  },
+  rightImage: {
+    marginRight: 40,
+  },
+  nextButton: {
+    backgroundColor: "#474d41",
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+  },
+  nextButtonText: {
+    color: "#fcfaf0",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
+
 
 export default SessionScreen;
