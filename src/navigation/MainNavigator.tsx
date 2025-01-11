@@ -1,3 +1,4 @@
+// Import necessary components
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,6 +14,17 @@ import MindScreen from '../screens/HomePageScreens/Mind';
 import TherapyScreen from '../screens/HomePageScreens/Therapy';
 import MoodScreen from '../screens/HomePageScreens/Mood';
 import UserJournals from '../screens/JournalPageScreens/UserJournals';
+import ReadJournal from '../screens/JournalPageScreens/ReadJournal';
+import AITherapy from '../screens/SettingPageScreens/AITherapy';
+import LanguageSelection from '../screens/SettingPageScreens/Language';
+import Subscription from '../screens/SettingPageScreens/Subscription';
+import VoiceSelection from '../screens/SettingPageScreens/Voice';
+import Monologue from '../screens/SessionPageScreens/Monologue';
+import Dialogue from '../screens/SessionPageScreens/Dialogue';
+import Type from '../screens/SessionPageScreens/Type';
+import Chat from '../screens/SessionPageScreens/Chat';
+import Prompt from '../screens/SessionPageScreens/Prompt';
+import Gratitude from '../screens/SessionPageScreens/Gratitude';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -55,12 +67,41 @@ const HomeStack = () => {
   );
 };
 
+// Settings stack navigator
+const SettingsStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SettingsMain" component={SettingsScreen} />
+      <Stack.Screen name="AITherapy" component={AITherapy} />
+      <Stack.Screen name="Language" component={LanguageSelection} />
+      <Stack.Screen name="Voice" component={VoiceSelection} />
+      <Stack.Screen name="Subscription" component={Subscription} />
+    </Stack.Navigator>
+  );
+};
+
 // Journal stack navigator
 const JournalStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="JournalMain" component={JournalScreen} />
       <Stack.Screen name="UserJournals" component={UserJournals} />
+      <Stack.Screen name="ReadJournal" component={ReadJournal} />
+    </Stack.Navigator>
+  );
+};
+
+// Session stack navigator
+const SessionStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="SessionMain" component={SessionScreen} />
+      <Stack.Screen name="Monologue" component={Monologue} />
+      <Stack.Screen name="Dialogue" component={Dialogue} />
+      <Stack.Screen name="Type" component={Type} />
+      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen name="Prompt" component={Prompt} />
+      <Stack.Screen name="Gratitude" component={Gratitude} />
     </Stack.Navigator>
   );
 };
@@ -88,9 +129,9 @@ const MainNavigator = () => {
       >
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Journey" component={JourneyScreen} />
-        <Tab.Screen name="Session" component={SessionScreen} />
+        <Tab.Screen name="Session" component={SessionStack} />
         <Tab.Screen name="Journal" component={JournalStack} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Settings" component={SettingsStack} />
       </Tab.Navigator>
     </>
   );

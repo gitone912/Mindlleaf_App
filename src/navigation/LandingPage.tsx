@@ -18,16 +18,16 @@ const LandingPage = ({ navigation }: any) => {
         setTimeout(() => {
           Animated.timing(fadeAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: 2000,
             useNativeDriver: true,
           }).start();
-        }, index * 1000); // Delay each animation by 1 second
+        }, index * 2000); // Delay each animation by 1 second
       });
 
       // After all text animations, move to the next phase
       setTimeout(() => {
         setCurrentScreen(1);
-      }, fadeAnims.length * 1000 + 1000);
+      }, fadeAnims.length * 2000 + 2000);
     } else if (currentScreen === 1) {
       // Logo fade-in and out
       Animated.timing(fadeAnim, {

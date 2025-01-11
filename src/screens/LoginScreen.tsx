@@ -23,7 +23,7 @@ const LoginPage = ({ navigation }: any) => {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.emailButton}
-          onPress={() => navigation.replace("HIW")} // Navigate to Main
+          onPress={() => navigation.replace("SigninEmail")} // Navigate to Main
         >
           <Text style={styles.emailButtonText}>Continue with Email</Text>
         </TouchableOpacity>

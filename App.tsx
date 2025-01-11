@@ -11,10 +11,8 @@ import HIW3 from './src/onboarding/HowItWorks3';
 import AskName from './src/onboarding/AskName';
 import AskNotification from './src/onboarding/AskNotification';
 import AskJournal from './src/onboarding/AskJournal';
-import ActionScreen from './src/screens/HomePageScreens/Actions';
-import MindScreen from './src/screens/HomePageScreens/Mind';
-import TherapyScreen from './src/screens/HomePageScreens/Therapy';
-import MoodScreen from './src/screens/HomePageScreens/Mood';
+import SignInEmail from './src/screens/SigninEmail';
+import VerifyOTP from './src/screens/VerifyOTP';
 
 
 const Stack = createStackNavigator();
@@ -26,6 +24,8 @@ const App = () => {
         <Stack.Screen name="LandingPage" component={LandingPage} />
         <Stack.Screen name="Survey" component={Survey} />
         <Stack.Screen name="Login" component={LoginPage} />
+        <Stack.Screen name="SigninEmail" component={SignInEmail} />
+        <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
         <Stack.Screen name="HIW" component={HIW} />
         <Stack.Screen name="HIW2" component={HIW2} />
         <Stack.Screen name="HIW3" component={HIW3} />

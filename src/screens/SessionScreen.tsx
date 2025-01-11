@@ -1,40 +1,85 @@
 import * as React from "react";
 import { Text, StyleSheet, Image, View, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+// Define the type for the navigation prop
+type SessionStackParamList = {
+  SessionMain: undefined;
+  Monologue: undefined;
+  Dialogue: undefined;
+  Type: undefined;
+  Chat: undefined;
+  Prompt: undefined;
+  Gratitude: undefined;
+};
+
+type SessionScreenNavigationProp = StackNavigationProp<SessionStackParamList, "SessionMain">;
 
 const SessionScreen = () => {
-
+  const navigation = useNavigation<SessionScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}></Text>
+      <Text style={styles.header}>Session</Text>
       <Text style={styles.subHeader}>
         Choose how you want to journal for today.
       </Text>
       <View style={styles.optionsGrid}>
-        <Image
-          style={[styles.optionImage, styles.leftImage]}
-          source={require("../assets/monologue.png")} // Replace with the correct image path
-        />
-        <Image
-          style={[styles.optionImage, styles.rightImage]}
-          source={require("../assets/dialogue.png")} // Replace with the correct image path
-        />
-        <Image
-          style={[styles.optionImage, styles.leftImage]}
-          source={require("../assets/type.png")} // Replace with the correct image path
-        />
-        <Image
-          style={[styles.optionImage, styles.rightImage]}
-          source={require("../assets/chat_ai.png")} // Replace with the correct image path
-        />
-        <Image
-          style={[styles.optionImage, styles.leftImage]}
-          source={require("../assets/prompt.png")} // Replace with the correct image path
-        />
-        <Image
-          style={[styles.optionImage, styles.rightImage]}
-          source={require("../assets/gratitude.png")} // Replace with the correct image path
-        />
+        <Pressable
+          onPress={() => navigation.navigate("Monologue")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/monologue.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Dialogue")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/dialogue.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Type")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/type.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Chat")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/chat_ai.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Prompt")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/prompt.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Gratitude")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/gratitude_based.png")}
+          />
+        </Pressable>
       </View>
     </View>
   );
@@ -54,19 +99,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 10,
   },
-  textButton: {
-    fontSize: 15,
-    lineHeight: 22,
-    fontFamily: "Inter-Regular",
-    color: "#fff",
-    backgroundColor: "#474d41",
-    width: 33,
-    height: 33,
-    borderRadius: 16.5,
-    textAlign: "center",
-    textAlignVertical: "center", // Centers the text vertically
-    marginBottom: 20,
-  },
   subHeader: {
     fontSize: 16,
     color: "#474d41",
@@ -76,33 +108,17 @@ const styles = StyleSheet.create({
   optionsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 30,
+    justifyContent: "space-around",
     width: "100%",
   },
-  optionImage: {
-    width: 120,
-    height: 143,
+  optionWrapper: {
     marginBottom: 1,
+    alignItems: "center",
   },
-  leftImage: {
-    marginLeft: 40,
-  },
-  rightImage: {
-    marginRight: 40,
-  },
-  nextButton: {
-    backgroundColor: "#474d41",
-    borderRadius: 25,
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-  },
-  nextButtonText: {
-    color: "#fcfaf0",
-    fontSize: 16,
-    textAlign: "center",
+  optionImage: {
+    width: 140,
+    height: 153,
   },
 });
-
 
 export default SessionScreen;
