@@ -7,7 +7,7 @@ const MoodScreen = () => {
     { day: "M", mood: "😐", value: 50 },
     { day: "T", mood: "☹️", value: 40 },
     { day: "W", mood: "🙂", value: 70 },
-    { day: "T", mood: "🙂", value: 70 },
+    { day: "TH", mood: "🙂", value: 70 },
     { day: "F", mood: "😁", value: 90 },
     { day: "S", mood: "😁", value: 90 },
   ];

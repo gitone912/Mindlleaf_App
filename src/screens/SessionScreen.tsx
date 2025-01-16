@@ -21,29 +21,14 @@ const SessionScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Session</Text>
+      
       <Text style={styles.subHeader}>
         Choose how you want to journal for today.
       </Text>
+      <Text style={styles.header}>Text</Text>
       <View style={styles.optionsGrid}>
-        <Pressable
-          onPress={() => navigation.navigate("Monologue")}
-          style={styles.optionWrapper}
-        >
-          <Image
-            style={styles.optionImage}
-            source={require("../assets/monologue.png")}
-          />
-        </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate("Dialogue")}
-          style={styles.optionWrapper}
-        >
-          <Image
-            style={styles.optionImage}
-            source={require("../assets/dialogue.png")}
-          />
-        </Pressable>
+       
+       
         <Pressable
           onPress={() => navigation.navigate("Type")}
           style={styles.optionWrapper}
@@ -80,6 +65,28 @@ const SessionScreen = () => {
             source={require("../assets/gratitude_based.png")}
           />
         </Pressable>
+        </View>
+        <Text style={styles.header}>Voice</Text>
+        <View style={styles.optionsGrid}>
+
+        <Pressable
+          onPress={() => navigation.navigate("Monologue")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/monologue.png")}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => navigation.navigate("Dialogue")}
+          style={styles.optionWrapper}
+        >
+          <Image
+            style={styles.optionImage}
+            source={require("../assets/dialogue.png")}
+          />
+        </Pressable>
       </View>
     </View>
   );
@@ -93,17 +100,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "600",
     color: "#000",
-    marginTop: 50,
-    marginBottom: 10,
+    marginTop: 20,
+    marginBottom: 3,
   },
   subHeader: {
     fontSize: 16,
     color: "#474d41",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 20,
+    marginTop:20
   },
   optionsGrid: {
     flexDirection: "row",

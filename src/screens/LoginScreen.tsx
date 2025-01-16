@@ -27,12 +27,7 @@ const LoginPage = ({ navigation }: any) => {
         >
           <Text style={styles.emailButtonText}>Continue with Email</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.phoneButton}
-          onPress={() => navigation.replace("HIW")} // Navigate to Main
-        >
-          <Text style={styles.phoneButtonText}>Continue with Phone</Text>
-        </TouchableOpacity>
+       
         <View style={styles.socialButtons}>
           <TouchableOpacity style={styles.socialButton}>
             <Image
