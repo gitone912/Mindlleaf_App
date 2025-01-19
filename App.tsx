@@ -13,12 +13,15 @@ import AskNotification from './src/onboarding/AskNotification';
 import AskJournal from './src/onboarding/AskJournal';
 import SignInEmail from './src/screens/SigninEmail';
 import VerifyOTP from './src/screens/VerifyOTP';
+import { Provider } from "react-redux";
+import store from "./src/store";
 
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="LandingPage" component={LandingPage} />
@@ -35,6 +38,7 @@ const App = () => {
         <Stack.Screen name="Main" component={MainNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 };
 

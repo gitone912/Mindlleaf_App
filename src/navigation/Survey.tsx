@@ -4,18 +4,18 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 const Survey = ({ navigation }: any) => {
   const questions = [
     "Why do you want to use mindleaf?",
-    "What do you want to focus on?",
-    "How often do you plan to use this app?",
-    "What is your primary goal?",
-    "How do you feel right now?",
+    "How old are you?",
+    "How would you rate your mental health?",
+    "How often do you journal?",
+    "How did you find about mindleaf?",
   ];
 
   const options = [
-    ["Journal easily", "Develop self-reflection habits", "Improve mental health", "Reduce stress or anxiety", "Something else"],
-    ["Work-life balance", "Better sleep", "Mindfulness", "Time management", "Other"],
-    ["Daily", "Weekly", "Occasionally", "Rarely", "Not sure yet"],
-    ["Happiness", "Calmness", "Clarity", "Productivity", "Other"],
-    ["Very happy", "Content", "Neutral", "Stressed", "Anxious"],
+    ["journal easily", "develop self-reflection habits", "improve mental health", "reduce stress or anxiety", "something else"],
+    ["under 18", "18-24", "25-34", "34-55", "above 45"],
+    ["😟 very poor", "🙁 poor", "😕 average", "😕 good","😀 very good"],
+    ["never", "1-2 times a week", "3-4 times a week", "5-6 times a week", "everyday"],
+    ["instagram", "facebook", "google", "product hunt", "reddit", "online advertisement", "friend"],
   ];
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -163,16 +163,17 @@ const styles = StyleSheet.create({
   optionsContainer: {
     flex: 1,
     justifyContent: 'center',
+    
   },
   optionButton: {
-    backgroundColor: '#FDFBF5',
+    backgroundColor: '#FFF9EE',
     borderRadius: 25,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginVertical: 10,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: '#CFCFCF',
   },
   selectedOptionButton: {
     borderColor: '#333',
