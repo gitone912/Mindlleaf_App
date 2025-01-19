@@ -9,7 +9,7 @@ const SignInEmail = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Enter your email</Text>
-      <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#d7d7d7" />
+      <TextInput style={styles.input} placeholder="newuser@mindleaf.com" placeholderTextColor="#d7d7d7" />
       
       <Text style={styles.label}>Enter your password</Text>
       <TextInput style={styles.input} placeholder="Password" placeholderTextColor="#d7d7d7" secureTextEntry />
@@ -18,7 +18,7 @@ const SignInEmail = ({ navigation }: any) => {
       <TextInput style={styles.input} placeholder="Confirm Password" placeholderTextColor="#d7d7d7" secureTextEntry />
 
       <Pressable style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign up</Text>
+        <Text style={styles.buttonText}>Sign in / Sign up</Text>
       </Pressable>
     </View>
   );
@@ -31,11 +31,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
+    paddingHorizontal: 30, // Added horizontal padding
+    marginHorizontal: 16, // Added horizontal margin
   },
   label: {
     width: "100%",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "600", // Made text bolder (was 600)
     color: "#000",
     marginBottom: 8,
     fontFamily: "SF Pro",
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700", // Made text bolder (was 600)
     fontFamily: "SF Pro",
   },
 });
