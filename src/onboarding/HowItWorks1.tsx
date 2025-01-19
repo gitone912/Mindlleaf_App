@@ -1,7 +1,23 @@
 import * as React from "react";
 import { Text, StyleSheet, Image, View, Pressable } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HIW = ({ navigation }: any) => {
+  React.useEffect(() => {
+    const getSurveyResponses = async () => {
+      try {
+        const responses = await AsyncStorage.getItem('surveyResponses');
+        if (responses) {
+          console.log("Retrieved survey responses:", JSON.parse(responses));
+        }
+      } catch (error) {
+        console.error("Error retrieving survey responses:", error);
+      }
+    };
+
+    getSurveyResponses();
+  }, []);
+
   const Text1 = () => {
     return <Text style={styles.textButton}>1</Text>;
   };

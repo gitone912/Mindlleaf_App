@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Survey = ({ navigation }: any) => {
   const questions = [
@@ -15,7 +16,7 @@ const Survey = ({ navigation }: any) => {
     ["under 18", "18-24", "25-34", "34-55", "above 45"],
     ["😟 very poor", "🙁 poor", "😕 average", "😕 good","😀 very good"],
     ["never", "1-2 times a week", "3-4 times a week", "5-6 times a week", "everyday"],
-    ["instagram", "facebook", "google", "product hunt", "reddit", "online advertisement", "friend"],
+    ["instagram", "facebook", "google", "product hunt", "reddit", "friend"],
   ];
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -40,7 +41,7 @@ const Survey = ({ navigation }: any) => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const updatedSelections = [...selectedOptions];
 
     if (selectedOptions[currentQuestionIndex] === "Something else" && currentQuestionIndex === 0) {
@@ -53,7 +54,16 @@ const Survey = ({ navigation }: any) => {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setShowSomethingElseInput(false); // Reset "Something else" input visibility
     } else {
-      console.log("Survey completed:", updatedSelections);
+      try {
+        const newResponse = {
+          responses: updatedSelections,
+          timestamp: new Date().toISOString()
+        };
+        await AsyncStorage.setItem('surveyResponses', JSON.stringify(newResponse));
+        console.log("Survey responses saved:", newResponse);
+      } catch (error) {
+        console.error("Error saving survey:", error);
+      }
       navigation.replace('Login');
     }
   };
