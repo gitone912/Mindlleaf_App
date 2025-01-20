@@ -21,6 +21,8 @@ const VerifyOTP = ({ route, navigation }: any) => {
         <View style={styles.otpBox} />
         <View style={styles.otpBox} />
         <View style={styles.otpBox} />
+        <View style={styles.otpBox} />
+        <View style={styles.otpBox} />
       </View>
       <Text style={styles.description} onPress={handleVerify}>
         We’ve sent a code to your email. Please enter it here to confirm.
