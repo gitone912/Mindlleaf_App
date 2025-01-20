@@ -67,3 +67,18 @@ export const submitSurvey = async (payload: SurveyPayload): Promise<{ message: s
   const response = await axios.post(`${BASE_URL_AUTH}/v1/surveys`, payload);
   return response.data;
 };
+
+interface UpdateUserPayload {
+  userId: string;
+  name: string;
+  isOnboarded: boolean;
+  notificationTime: string;
+  notificationDays: string[];
+  points: number;
+  coverChoice: string;
+}
+
+export const updateUser = async (payload: UpdateUserPayload): Promise<{ message: string }> => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/users/update`, payload);
+  return response.data;
+};

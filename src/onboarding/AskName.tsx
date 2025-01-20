@@ -14,8 +14,7 @@ const AskName = ({ navigation }: any) => {
   }, []);
 
   const handleNext = () => {
-    console.log("Name entered:", name); // Prints name in terminal
-    navigation.replace("AskNotification"); // Navigates to "AskJournal"
+    navigation.replace("AskNotification", { name });
   };
 
   return (

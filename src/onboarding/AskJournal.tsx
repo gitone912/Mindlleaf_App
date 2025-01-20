@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Text, StyleSheet, View, Pressable, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateUser } from '../api/authApi';
 
 const journalCovers: { [key: string]: any } = {
   '1': require('../assets/journalCovers/1.png'),
@@ -9,11 +10,41 @@ const journalCovers: { [key: string]: any } = {
   '4': require('../assets/journalCovers/4.png'),
 };
 
-const AskJournal = ({ navigation }: any) => {
+const AskJournal = ({ navigation, route }: any) => {
+  const { name, notificationDays, notificationTime } = route.params;
   const [selectedCover, setSelectedCover] = React.useState<string | null>(null);
 
   const handleCoverSelect = (coverNumber: string) => {
     setSelectedCover(coverNumber);
+  };
+
+  const handleFinish = async () => {
+    if (selectedCover) {
+      try {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (!userDataString) {
+          console.error('No user data found');
+          return;
+        }
+        
+        const userData = JSON.parse(userDataString);
+        
+        const payload = {
+          userId: userData.user_id,
+          name: name,
+          isOnboarded: true,
+          notificationTime: notificationTime,
+          notificationDays: notificationDays,
+          points: 15,
+          coverChoice: selectedCover
+        };
+
+        await updateUser(payload);
+        navigation.navigate("Main");
+      } catch (error) {
+        console.error('Error updating user:', error);
+      }
+    }
   };
 
   return (
@@ -42,12 +73,7 @@ const AskJournal = ({ navigation }: any) => {
 
       <Pressable
         style={[styles.nextButton, !selectedCover && styles.disabledButton]}
-        onPress={() => {
-          if (selectedCover) {
-            console.log("Final journal cover selection:", selectedCover);
-            navigation.navigate("Main");
-          }
-        }}
+        onPress={handleFinish}
       >
         <Text style={styles.nextButtonText}>Next</Text>
       </Pressable>

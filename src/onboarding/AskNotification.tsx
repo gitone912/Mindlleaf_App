@@ -2,7 +2,8 @@ import * as React from "react";
 import { Text, StyleSheet, View, Pressable, Image, TouchableOpacity, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-const AskNotification = ({ navigation }: any) => {
+const AskNotification = ({ navigation, route }: any) => {
+  const { name } = route.params;
   const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
   const [selectedTime, setSelectedTime] = React.useState("9:00 PM");
   const [showTimePicker, setShowTimePicker] = React.useState(false);
@@ -27,12 +28,26 @@ const AskNotification = ({ navigation }: any) => {
   };
 
   const printSelections = () => {
-    console.log("Selected Days:", selectedDays);
-    console.log("Selected Time:", selectedTime);
-    navigation.replace("AskJournal");
+    // Convert short day names to full names
+    const dayMap: { [key: string]: string } = {
+      'S': 'Sunday',
+      'M': 'Monday',
+      'T': 'Tuesday',
+      'W': 'Wednesday',
+      'TH': 'Thursday',
+      'F': 'Friday',
+      'SA': 'Saturday'
+    };
+
+    const fullDays = selectedDays.map(day => dayMap[day]);
+    navigation.replace("AskJournal", {
+      name,
+      notificationDays: fullDays,
+      notificationTime: selectedTime
+    });
   };
 
-  const days = ["S", "M", "T", "W", "TH", "F", "S"];
+  const days = ["S", "M", "T", "W", "TH", "F", "SA"];
 
   return (
     <View style={[styles.container]}>
