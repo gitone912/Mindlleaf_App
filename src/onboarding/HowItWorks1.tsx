@@ -1,7 +1,40 @@
 import * as React from "react";
 import { Text, StyleSheet, Image, View, Pressable } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { submitSurvey } from "../api/authApi";
 
 const HIW = ({ navigation }: any) => {
+  React.useEffect(() => {
+    const submitSurveyData = async () => {
+      try {
+        // Get survey responses
+        const surveyData = await AsyncStorage.getItem('surveyResponses');
+        const userDataString = await AsyncStorage.getItem('userData');
+        
+        if (!surveyData || !userDataString) return;
+
+        const { responses } = JSON.parse(surveyData);
+        const userData = JSON.parse(userDataString);
+
+        const surveyPayload = {
+          userId: userData.user_id,
+          question1: responses[0],
+          question2: responses[1],
+          question3: responses[2],
+          question4: responses[3],
+          question5: responses[4],
+        };
+
+        await submitSurvey(surveyPayload);
+        // After successful submission, optionally clear the survey data
+        await AsyncStorage.removeItem('surveyResponses');
+      } catch (error) {
+        console.error('Error submitting survey:', error);
+      }
+    };
+
+    submitSurveyData();
+  }, []);
 
   const Text1 = () => {
     return <Text style={styles.textButton}>1</Text>;

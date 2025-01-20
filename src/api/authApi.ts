@@ -53,3 +53,17 @@ export const verifyOTP = async (payload: OtpVerifyPayload): Promise<SigninRespon
   const response = await axios.post(`${BASE_URL_AUTH}/v1/users/verify-otp`, payload);
   return response.data;
 };
+
+interface SurveyPayload {
+  userId: string;
+  question1: string;
+  question2: string;
+  question3: string;
+  question4: string;
+  question5: string;
+}
+
+export const submitSurvey = async (payload: SurveyPayload): Promise<{ message: string }> => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/surveys`, payload);
+  return response.data;
+};
