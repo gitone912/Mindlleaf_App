@@ -22,8 +22,8 @@ const SignInEmail = ({ navigation }: any) => {
 
   React.useEffect(() => {
     if (user) {
-      // navigation.navigate("Main")
-      navigation.navigate("HIW")
+      navigation.navigate("Main")
+      // navigation.navigate("HIW")
     }
   }, [user]);
 
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     paddingHorizontal: 30, // Added horizontal padding
-    marginHorizontal: 16, // Added horizontal margin
   },
   label: {
     width: "100%",

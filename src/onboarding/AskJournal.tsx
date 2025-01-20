@@ -36,6 +36,7 @@ const AskJournal = ({ navigation, route }: any) => {
           notificationTime: notificationTime,
           notificationDays: notificationDays,
           points: 15,
+          subscription:"freeTier",
           coverChoice: selectedCover
         };
 
