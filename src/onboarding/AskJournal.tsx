@@ -1,7 +1,21 @@
 import * as React from "react";
 import { Text, StyleSheet, View, Pressable, Image } from "react-native";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const AskJournal = ({ navigation }: any) => {
+  React.useEffect(() => {
+    const getSurveyResponses = async () => {
+      try {
+        const responses = await AsyncStorage.getItem('surveyResponses');
+        if (responses) {
+          console.log("Retrieved survey responses:", JSON.parse(responses));
+        }
+      } catch (error) {
+        console.error("Error retrieving survey responses:", error);
+      }
+    };
+
+    getSurveyResponses();
+  }, []);
       return (
         <View style={styles.container}>
           {/* Subtitle */}

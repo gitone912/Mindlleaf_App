@@ -9,6 +9,7 @@ const VerifyOTP = ({ route, navigation }: any) => {
     const dispatch = useAppDispatch();
     const { loading, error, user } = useAppSelector((state) => state.auth);
     const [otp, setOtp] = React.useState(['', '', '', '', '', '']);
+    const [showSuccess, setShowSuccess] = React.useState(false);
     const inputRefs = React.useRef<Array<TextInput | null>>([]);
 
     React.useEffect(() => {
@@ -42,13 +43,26 @@ const VerifyOTP = ({ route, navigation }: any) => {
     const verifyUserOtpHandler = async (otpString: string) => {
         try {
             await dispatch(verifyUserOTP({ email, password, otp: otpString })).unwrap();
-            navigation.replace('HIW');
+            setShowSuccess(true);
+            // Wait 2 seconds before navigating
+            setTimeout(() => {
+                navigation.replace('HIW');
+            }, 1000);
         } catch (error: any) {
             Alert.alert("Error", error);
             setOtp(['', '', '', '', '', '']);
             inputRefs.current[0]?.focus();
         }
     };
+
+    if (showSuccess) {
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#474d41" />
+                <Text style={styles.loadingText}>Registration Successful!</Text>
+            </View>
+        );
+    }
 
     if (loading) {
         return (
@@ -110,8 +124,10 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         marginTop: 10,
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: '600',
         color: '#474d41',
+        fontFamily: 'SF Pro',
     },
     otpBox: {
         width: 45,

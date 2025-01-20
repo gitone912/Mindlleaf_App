@@ -1,7 +1,9 @@
 import * as React from "react";
 import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 
+
 const HIW3 = ({ navigation }: any) => {
+
   return (
     <View style={styles.container}>
       {/* Title */}

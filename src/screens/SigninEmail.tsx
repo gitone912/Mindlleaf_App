@@ -22,7 +22,8 @@ const SignInEmail = ({ navigation }: any) => {
 
   React.useEffect(() => {
     if (user) {
-      navigation.navigate("Main")
+      // navigation.navigate("Main")
+      navigation.navigate("HIW")
     }
   }, [user]);
 
