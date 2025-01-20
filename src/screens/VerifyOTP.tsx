@@ -1,11 +1,18 @@
 import * as React from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 
-const VerifyOTP = ({ navigation }: any) => {
+const VerifyOTP = ({ route, navigation }: any) => {
+    const { email, password } = route.params || {};
+
+    React.useEffect(() => {
+        console.log('Email received:', email);
+        console.log('Password received:', password);
+    }, []);
 
     const handleVerify = () => {
         navigation.replace('HIW');
-      };
+    };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Verify your email</Text>
