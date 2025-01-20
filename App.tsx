@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingPage from './src/navigation/LandingPage';
@@ -15,29 +16,56 @@ import SignInEmail from './src/screens/SigninEmail';
 import VerifyOTP from './src/screens/VerifyOTP';
 import { Provider } from "react-redux";
 import store from "./src/store";
-
+import OldUserLanding from './src/navigation/OldUserLanding';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          if (parsedData.user_id) {
+            setInitialRoute('OldUserLanding');
+          } else {
+            setInitialRoute('LandingPage');
+          }
+        } else {
+          setInitialRoute('LandingPage');
+        }
+      } catch (error) {
+        console.error('Error checking user data:', error);
+        setInitialRoute('LandingPage');
+      }
+    };
+    checkUserData();
+  }, []);
+
+  if (!initialRoute) return null;
+
   return (
     <Provider store={store}>
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="LandingPage" component={LandingPage} />
-        <Stack.Screen name="Survey" component={Survey} />
-        <Stack.Screen name="Login" component={LoginPage} />
-        <Stack.Screen name="SigninEmail" component={SignInEmail} />
-        <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
-        <Stack.Screen name="HIW" component={HIW} />
-        <Stack.Screen name="HIW2" component={HIW2} />
-        <Stack.Screen name="HIW3" component={HIW3} />
-        <Stack.Screen name="AskName" component={AskName} />
-        <Stack.Screen name="AskNotification" component={AskNotification} />
-        <Stack.Screen name="AskJournal" component={AskJournal} />
-        <Stack.Screen name="Main" component={MainNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
+          <Stack.Screen name="OldUserLanding" component={OldUserLanding} />
+          <Stack.Screen name="LandingPage" component={LandingPage} />
+          <Stack.Screen name="Survey" component={Survey} />
+          <Stack.Screen name="Login" component={LoginPage} />
+          <Stack.Screen name="SigninEmail" component={SignInEmail} />
+          <Stack.Screen name="VerifyOTP" component={VerifyOTP} />
+          <Stack.Screen name="HIW" component={HIW} />
+          <Stack.Screen name="HIW2" component={HIW2} />
+          <Stack.Screen name="HIW3" component={HIW3} />
+          <Stack.Screen name="AskName" component={AskName} />
+          <Stack.Screen name="AskNotification" component={AskNotification} />
+          <Stack.Screen name="AskJournal" component={AskJournal} />
+          <Stack.Screen name="Main" component={MainNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 };
