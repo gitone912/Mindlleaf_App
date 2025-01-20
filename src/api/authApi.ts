@@ -10,6 +10,12 @@ interface SigninPayload {
   password: string;
 }
 
+interface OtpVerifyPayload {
+  email: string;
+  password: string;
+  otp: string;
+}
+
 interface User {
   cover_choice: string;
   created_at: string;
@@ -35,5 +41,15 @@ export const signupUser = async (payload: SignupPayload): Promise<{ message: str
 
 export const signinUser = async (payload: SigninPayload): Promise<SigninResponse> => {
   const response = await axios.post(`${BASE_URL_AUTH}/v1/users/sign-in`, payload);
+  return response.data;
+};
+
+export const initiateSignup = async (payload: SignupPayload): Promise<{ message: string }> => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/users/sign-up`, payload);
+  return response.data;
+};
+
+export const verifyOTP = async (payload: OtpVerifyPayload): Promise<SigninResponse> => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/users/verify-otp`, payload);
   return response.data;
 };

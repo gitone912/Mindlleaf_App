@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { signupUser, signinUser } from "../../api/authApi";
+import { signupUser, signinUser, initiateSignup, verifyOTP } from "../../api/authApi";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthState {
@@ -51,6 +51,35 @@ export const signin = createAsyncThunk(
   }
 );
 
+// Async thunk for initiating signup (sending OTP)
+export const initiateUserSignup = createAsyncThunk(
+  "auth/initiateSignup",
+  async (payload: { email: string }, { rejectWithValue }) => {
+    try {
+      const response = await initiateSignup(payload);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to send OTP");
+    }
+  }
+);
+
+// Async thunk for OTP verification and completing signup
+export const verifyUserOTP = createAsyncThunk(
+  "auth/verifyOTP",
+  async (payload: { email: string; password: string; otp: string }, { rejectWithValue }) => {
+    try {
+      const response = await verifyOTP(payload);
+      if (response.user) {
+        await AsyncStorage.setItem('userData', JSON.stringify(response.user));
+      }
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "OTP verification failed");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -88,6 +117,33 @@ const authSlice = createSlice({
         state.user = action.payload.user || null;
       })
       .addCase(signin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(initiateUserSignup.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(initiateUserSignup.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(initiateUserSignup.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(verifyUserOTP.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(verifyUserOTP.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.user = action.payload.user || null;
+      })
+      .addCase(verifyUserOTP.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
