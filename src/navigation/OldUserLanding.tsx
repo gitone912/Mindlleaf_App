@@ -10,7 +10,7 @@ const OldUserLanding = ({ navigation }: any) => {
       try {
         const userData = await AsyncStorage.getItem('userData');
         const parsedData = userData ? JSON.parse(userData) : null;
-        const isOnboarded = parsedData?.is_onboarded || false;
+        const isOnboarded = parsedData?.is_onboarded || parsedData?.isOnboarded || false;
 
         // Start logo animation
         Animated.timing(fadeAnim, {

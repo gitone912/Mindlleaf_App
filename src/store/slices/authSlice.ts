@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { signupUser, signinUser, initiateSignup, verifyOTP } from "../../api/authApi";
+import { signupUser, signinUser, initiateSignup, verifyOTP, googleAuth } from "../../api/authApi";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthState {
@@ -7,6 +7,7 @@ interface AuthState {
   error: string | null;
   message: string | null;
   user: any | null;
+  isNewUser?: boolean;
 }
 
 const initialState: AuthState = {
@@ -80,6 +81,21 @@ export const verifyUserOTP = createAsyncThunk(
   }
 );
 
+export const googleSignIn = createAsyncThunk(
+  "auth/googleSignIn",
+  async (idToken: string, { rejectWithValue }) => {
+    try {
+      const response = await googleAuth(idToken);
+      if (response.user) {
+        await AsyncStorage.setItem('userData', JSON.stringify(response.user));
+      }
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error?.response?.data?.message || "Google sign in failed");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -144,6 +160,20 @@ const authSlice = createSlice({
         state.user = action.payload.user || null;
       })
       .addCase(verifyUserOTP.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(googleSignIn.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.message = action.payload.message;
+        state.isNewUser = action.payload.isNewUser;
+      })
+      .addCase(googleSignIn.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

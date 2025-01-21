@@ -79,7 +79,7 @@ android {
 
     namespace "com.mindlleaf_app"
     defaultConfig {
-        applicationId "com.mindlleaf_app"
+        applicationId "com.mindlleaf_app"  // Must match Firebase package name exactly
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -116,4 +116,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

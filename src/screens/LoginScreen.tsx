@@ -1,7 +1,60 @@
 import React from "react";
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { GoogleSignin, type User, statusCodes } from '@react-native-google-signin/google-signin';
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { googleSignIn } from "../store/slices/authSlice";
+
+type GoogleSignInData = {
+  user: User;
+  idToken: string | null;
+  serverAuthCode: string | null;
+  scopes: string[];
+};
 
 const LoginPage = ({ navigation }: any) => {
+  const dispatch = useAppDispatch();
+  const { user, isNewUser } = useAppSelector((state) => state.auth);
+
+  React.useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '496351300999-k2r1e0s31dm9s7imhobfhlusmdinkcck.apps.googleusercontent.com', // Get this from Google Cloud Console
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (user) {
+      if (isNewUser || !user.is_onboarded) {
+        navigation.navigate("HIW");
+      } else {
+        navigation.navigate("Main");
+      }
+    }
+  }, [user, isNewUser]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signOut(); // Clear existing sessions
+      
+      const signInResult = await GoogleSignin.signIn();
+      const tokens = await GoogleSignin.getTokens();
+      
+      if (tokens.idToken) {
+        await dispatch(googleSignIn(tokens.idToken)).unwrap();
+      } else {
+        throw new Error('No ID token received');
+      }
+    } catch (error: any) {
+      console.log('Google Sign-In Error:', error);
+      if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User cancelled sign-in');
+      }
+      await GoogleSignin.signOut();
+    }
+  };
+
   return (
     <View style={styles.loginPage}>
       {/* Logo */}
@@ -29,7 +82,10 @@ const LoginPage = ({ navigation }: any) => {
         </TouchableOpacity>
        
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton}>
+          <TouchableOpacity 
+            style={styles.socialButton}
+            onPress={handleGoogleSignIn}
+          >
             <Image
               style={styles.socialIcon}
               source={require("../assets/google-icon.png")} // Update the path to your Google icon

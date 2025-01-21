@@ -36,11 +36,20 @@ const AskJournal = ({ navigation, route }: any) => {
           notificationTime: notificationTime,
           notificationDays: notificationDays,
           points: 15,
-          subscription:"freeTier",
+          subscription: "freeTier",
           coverChoice: selectedCover
         };
 
+        // Update API
         await updateUser(payload);
+
+        // Update local storage with merged data
+        const updatedUserData = {
+          ...userData,
+          ...payload
+        };
+        await AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
+
         navigation.navigate("Main");
       } catch (error) {
         console.error('Error updating user:', error);

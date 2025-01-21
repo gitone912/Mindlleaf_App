@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL_AUTH } from "./baseUrls";
+import { type User as GoogleUser } from '@react-native-google-signin/google-signin';
 
 interface SignupPayload {
   email: string;
@@ -82,4 +83,25 @@ interface UpdateUserPayload {
 export const updateUser = async (payload: UpdateUserPayload): Promise<{ message: string }> => {
   const response = await axios.post(`${BASE_URL_AUTH}/v1/users/update`, payload);
   return response.data;
+};
+
+interface GoogleAuthPayload {
+  idToken: string;
+  user: GoogleUser;
+}
+
+interface GoogleAuthResponse extends SigninResponse {
+  isNewUser: boolean;
+}
+
+export const googleAuth = async (idToken: string): Promise<GoogleAuthResponse> => {
+  try {
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/users/google-auth`, {
+      idToken
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Google auth error:', error);
+    throw error;
+  }
 };
