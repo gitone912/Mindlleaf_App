@@ -111,7 +111,7 @@ const MainNavigator = () => {
   return (
     <>
       <SafeAreaView>
-        <Header points={100} />
+        <Header />
       </SafeAreaView>
       <Tab.Navigator
         screenOptions={({ route }) => ({

@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import { usePoints } from '../hooks/usePoints';
 
-interface HeaderProps {
-  points: number; // Pass the points dynamically
-}
+const Header: React.FC = () => {
+  const points = usePoints();
 
-const Header: React.FC<HeaderProps> = ({ points }) => {
   return (
     <View style={styles.header}>
       <View style={styles.pointsContainer}>
@@ -42,9 +41,8 @@ const styles = StyleSheet.create({
   },
   points: {
     fontSize: 15,
-
-fontFamily: "Inter-Medium",
-color: "#979797",
+    fontFamily: "Inter-Medium",
+    color: "#979797",
   },
   icons: {
     flexDirection: 'row',

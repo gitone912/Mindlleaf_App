@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { signupUser, signinUser, initiateSignup, verifyOTP, googleAuth } from "../../api/authApi";
+import { signupUser, signinUser, initiateSignup, verifyOTP, googleAuth, getUserById } from "../../api/authApi";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { notifyPointsUpdated } from '../../hooks/usePoints';
 
 interface AuthState {
   loading: boolean;
@@ -96,6 +97,22 @@ export const googleSignIn = createAsyncThunk(
   }
 );
 
+export const fetchUserById = createAsyncThunk(
+  "auth/fetchUserById",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await getUserById(userId);
+      if (response.user) {
+        await AsyncStorage.setItem('userData', JSON.stringify(response.user));
+        notifyPointsUpdated(); // Notify that points have been updated
+      }
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch user");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -176,6 +193,9 @@ const authSlice = createSlice({
       .addCase(googleSignIn.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.user = action.payload.user;
       });
   },
 });

@@ -85,6 +85,11 @@ export const updateUser = async (payload: UpdateUserPayload): Promise<{ message:
   return response.data;
 };
 
+export const getUserById = async (userId: string): Promise<{ user: User }> => {
+  const response = await axios.get(`${BASE_URL_AUTH}/v1/users/${userId}`);
+  return { user: response.data };
+};
+
 interface GoogleAuthPayload {
   idToken: string;
   user: GoogleUser;
