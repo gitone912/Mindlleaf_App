@@ -1,12 +1,22 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../../store/hooks';
 import { getMindData } from '../../store/slices/mindSlice';
 import { MindData } from '../../api/mindTaskApi';
 
+type RootStackParamList = {
+  Therapy: undefined;
+  Session: undefined;
+};
+
+type MindScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+
 const MindScreen = () => {
+  const navigation = useNavigation<MindScreenNavigationProp>();
   const dispatch = useAppDispatch();
   const [latestMind, setLatestMind] = useState<MindData | null>(null);
 
@@ -60,10 +70,16 @@ const MindScreen = () => {
 
       {/* Action Buttons */}
       <View style={styles.buttonRow}>
-        <Pressable style={styles.button} onPress={() => {}}>
+        <Pressable 
+          style={styles.button} 
+          onPress={() => navigation.navigate('Therapy')}
+        >
           <Text style={styles.buttonText}>Talk to a therapist</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => {}}>
+        <Pressable 
+          style={styles.button} 
+          onPress={() => navigation.navigate('Session')}
+        >
           <Text style={styles.buttonText}>Journal</Text>
         </Pressable>
       </View>
