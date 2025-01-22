@@ -4,6 +4,7 @@ import taskReducer from "./slices/actionSlice";
 import mindReducer from "./slices/mindSlice";
 import therapyReducer from './slices/therapySlice';
 import moodReducer from "./slices/moodSlice";
+import journeyReducer from './slices/journeySlice';
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     tasks: taskReducer,
     mind: mindReducer,
     therapy: therapyReducer,
-    mood: moodReducer
+    mood: moodReducer,
+    journey: journeyReducer
   },
 });
 

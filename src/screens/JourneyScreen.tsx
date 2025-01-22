@@ -1,6 +1,10 @@
 // Importing necessary libraries
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getStreak } from '../store/slices/journeySlice';
+import { AppDispatch, RootState } from '../store';
+import { useFocusEffect } from '@react-navigation/native';
 
 // JSON data for the boxes
 const data = [
@@ -41,17 +45,26 @@ const data = [
   },
 ];
 
-// JSON for the current day
-const currentDay = 25;
-
 const DayProgress = ({ currentDay, totalDays }: { currentDay: number; totalDays: number }) => (
   <Text style={styles.dayProgress}>Day {currentDay} of {totalDays}</Text>
 );
 
 const JourneyScreen = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { streak } = useSelector((state: RootState) => state.journey);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(getStreak());
+    }, [dispatch])
+  );
+
+  const currentDay = streak;
+
   // Render a single box item
   const renderItem = ({ item }: { item: { id: string; title: string; subtitle: string; icon: string; days: number } }) => {
     const isRunning = currentDay <= item.days && currentDay > (data.find((box) => box.id === (parseInt(item.id) - 1)?.toString())?.days || 0);
+    const isCompleted = currentDay > item.days;
     const isActive = currentDay >= item.days;
 
     return (
@@ -62,12 +75,12 @@ const JourneyScreen = () => {
           isRunning && styles.runningBox,
         ]}
       >
-        <Text style={[styles.icon, isActive ? styles.activeText : styles.defaultText]}>{item.icon}</Text>
-        <Text style={[styles.title, isActive ? styles.activeText : styles.defaultText]}>{item.title}</Text>
+        <Text style={[styles.icon, isCompleted ? styles.activeText : styles.defaultText]}>{item.icon}</Text>
+        <Text style={[styles.title, isCompleted ? styles.activeText : styles.defaultText]}>{item.title}</Text>
         {isRunning ? (
           <DayProgress currentDay={currentDay} totalDays={item.days} />
         ) : (
-          <Text style={[styles.subtitle, isActive ? styles.activeText : styles.defaultText]}>{item.subtitle}</Text>
+          <Text style={[styles.subtitle, isCompleted ? styles.activeText : styles.defaultText]}>{item.subtitle}</Text>
         )}
       </View>
     );
