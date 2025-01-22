@@ -2,7 +2,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Image, StyleSheet, SafeAreaView } from 'react-native';
+import { Image, StyleSheet, SafeAreaView, Keyboard } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import JourneyScreen from '../screens/JourneyScreen';
 import SessionScreen from '../screens/SessionScreen';
@@ -110,6 +110,28 @@ const SessionStack = () => {
 
 // Main navigator with tabs
 const MainNavigator = () => {
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   return (
     <>
       <SafeAreaView>
@@ -127,6 +149,14 @@ const MainNavigator = () => {
           },
           tabBarActiveTintColor: '#000',
           tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            display: isKeyboardVisible ? 'none' : 'flex',
+            // Add these properties to prevent layout issues
+            position: 'absolute',
+            backgroundColor: '#FCFAF0',
+            borderTopWidth: 0,
+            elevation: 0,
+          }
         })}
       >
         <Tab.Screen name="Home" component={HomeStack} />
