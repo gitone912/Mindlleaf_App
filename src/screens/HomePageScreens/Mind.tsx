@@ -44,7 +44,7 @@ const MindScreen = () => {
       {/* Status Section */}
       <Text style={styles.subtitle}>Based on your journal entries, here’s a snapshot of your mental health status.</Text>
       <View style={styles.statusWrapper}>
-        <Text style={styles.statusText}>{latestMind?.title || 'Loading...'}</Text>
+        <Text style={styles.statusText}>{latestMind?.title || '🤗'}</Text>
       </View>
 
       {/* Description Section */}

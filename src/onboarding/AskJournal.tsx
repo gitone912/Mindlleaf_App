@@ -44,9 +44,19 @@ const AskJournal = ({ navigation, route }: any) => {
         await updateUser(payload);
 
         // Update local storage with merged data
+        const new_payload = {
+          userId: userData.user_id,
+          name: name,
+          isOnboarded: true,
+          notification_time: notificationTime,
+          notification_days: notificationDays,
+          points: 15,
+          subscription: "freeTier",
+          coverChoice: selectedCover
+        };
         const updatedUserData = {
           ...userData,
-          ...payload
+          ...new_payload
         };
         await AsyncStorage.setItem('userData', JSON.stringify(updatedUserData));
 
