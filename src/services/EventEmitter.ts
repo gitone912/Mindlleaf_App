@@ -1,15 +1,7 @@
-import { NativeEventEmitter, NativeModule } from 'react-native';
-
-class EventEmitterService extends NativeEventEmitter {
-  constructor() {
-    super({} as NativeModule);
-  }
-}
-
-const eventEmitter = new EventEmitterService();
+import { DeviceEventEmitter } from 'react-native';
 
 export const EVENTS = {
   POINTS_UPDATED: 'POINTS_UPDATED',
 };
 
-export default eventEmitter;
+export default DeviceEventEmitter;
