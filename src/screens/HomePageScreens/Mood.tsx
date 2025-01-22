@@ -1,16 +1,60 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store';
+import { fetchMoodData } from '../../store/slices/moodSlice';
 
 const MoodScreen = () => {
-  const moodData = [
-    { day: "S", mood: "😞", value: 30 },
-    { day: "M", mood: "😐", value: 50 },
-    { day: "T", mood: "☹️", value: 40 },
-    { day: "W", mood: "🙂", value: 70 },
-    { day: "TH", mood: "🙂", value: 70 },
-    { day: "F", mood: "😁", value: 90 },
-    { day: "S", mood: "😁", value: 90 },
-  ];
+  const dispatch = useDispatch<AppDispatch>();
+  const { moodData, loading, error } = useSelector((state: RootState) => state.mood);
+
+  useEffect(() => {
+    dispatch(fetchMoodData());
+  }, [dispatch]);
+
+  const getMoodStatement = () => {
+    if (!moodData.length) return "No mood data available";
+    
+    const average = moodData.reduce((acc: number, curr: any) => acc + curr.value, 0) / moodData.length;
+    
+    if (average >= 90) {
+      return "You're experiencing peak emotional well-being! Your positive outlook and engagement with life are creating meaningful experiences. Remember these moments as they shape your journey.";
+    } else if (average >= 80) {
+      return "Your emotional resilience is impressive. You're finding joy in daily activities and maintaining strong social connections. This balanced state reflects inner harmony.";
+    } else if (average >= 70) {
+      return "You're navigating life's challenges with grace. While not everything is perfect, you're maintaining a positive perspective and finding opportunities for growth.";
+    } else if (average >= 60) {
+      return "Your self-awareness is helping you maintain emotional stability. Small positive changes in your routine are contributing to your overall well-being.";
+    } else if (average >= 50) {
+      return "You're in a period of reflection and adjustment. Remember that it's natural to experience both ups and downs - this is part of the human experience.";
+    } else if (average >= 40) {
+      return "You might be feeling the weight of daily pressures. Consider incorporating mindful moments and gentle self-care practices into your routine.";
+    } else if (average >= 30) {
+      return "Life's challenges may feel more intense right now. Remember that seeking support and connection with others can provide new perspectives and comfort.";
+    } else if (average >= 20) {
+      return "You're showing strength by acknowledging your emotions. Small steps toward self-care and reaching out to trusted friends or professionals can make a difference.";
+    } else if (average >= 10) {
+      return "During these challenging moments, remember that emotions are temporary. Consider professional support to help navigate this period with compassion for yourself.";
+    } else {
+      return "You're experiencing a significant emotional challenge. Remember that seeking help is a sign of wisdom and strength. Professional support can provide valuable perspectives and coping strategies.";
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#2e2e2e" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -20,11 +64,11 @@ const MoodScreen = () => {
       </Text>
       <View style={styles.messageContainer}>
         <Text style={styles.message}>
-          Your mood seems to be highly correlated to your job satisfaction.
+          {getMoodStatement()}
         </Text>
       </View>
       <View style={styles.chartContainer}>
-        {moodData.map((data, index) => (
+        {moodData.map((data:any, index:any) => (
           <View key={index} style={styles.barContainer}>
             <Text style={styles.moodIcon}>{data.mood}</Text>
             <View style={styles.barBackground}>
@@ -115,6 +159,17 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Medium",
     color: "#000",
     marginTop: 5,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'center',
+    padding: 20,
   },
 });
 

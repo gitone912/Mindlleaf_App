@@ -3,13 +3,15 @@ import authReducer from "./slices/authSlice";
 import taskReducer from "./slices/actionSlice";
 import mindReducer from "./slices/mindSlice";
 import therapyReducer from './slices/therapySlice';
+import moodReducer from "./slices/moodSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     tasks: taskReducer,
     mind: mindReducer,
-    therapy: therapyReducer
+    therapy: therapyReducer,
+    mood: moodReducer
   },
 });
 
