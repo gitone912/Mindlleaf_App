@@ -26,6 +26,7 @@ import Chat from '../screens/SessionPageScreens/Chat';
 import Prompt from '../screens/SessionPageScreens/Prompt';
 import Gratitude from '../screens/SessionPageScreens/Gratitude';
 import TypeJournal from '../screens/SessionPageScreens/TypeJournal';
+import ChatJournal from '../screens/SessionPageScreens/ChatJournal';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -54,6 +55,8 @@ const icons: Record<RouteNames, { active: any; inactive: any }> = {
     inactive: require('../assets/icons/settings-inactive.png'),
   },
 };
+
+const TAB_BAR_HEIGHT = 60;
 
 // Home stack navigator
 const HomeStack = () => {
@@ -102,6 +105,7 @@ const SessionStack = () => {
       <Stack.Screen name="Type" component={Type} />
       <Stack.Screen name="TypeJournal" component={TypeJournal} />
       <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen name="ChatJournal" component={ChatJournal} />
       <Stack.Screen name="Prompt" component={Prompt} />
       <Stack.Screen name="Gratitude" component={Gratitude} />
     </Stack.Navigator>
@@ -151,12 +155,18 @@ const MainNavigator = () => {
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
             display: isKeyboardVisible ? 'none' : 'flex',
-            // Add these properties to prevent layout issues
-            position: 'absolute',
             backgroundColor: '#FCFAF0',
-            borderTopWidth: 0,
-            elevation: 0,
-          }
+            borderTopWidth: 1,
+            borderTopColor: '#E5E5E5',
+            height: TAB_BAR_HEIGHT,
+            paddingBottom: 8,
+            paddingTop: 8,
+          },
+          // Add this to create bottom padding for content
+          contentStyle: {
+            backgroundColor: '#FCFAF0',
+          },
+          tabBarHideOnKeyboard: true,
         })}
       >
         <Tab.Screen name="Home" component={HomeStack} />
