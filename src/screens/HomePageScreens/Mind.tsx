@@ -1,7 +1,41 @@
 import * as React from "react";
-import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppDispatch } from '../../store/hooks';
+import { getMindData } from '../../store/slices/mindSlice';
+import { MindData } from '../../api/mindTaskApi';
 
 const MindScreen = () => {
+  const dispatch = useAppDispatch();
+  const [latestMind, setLatestMind] = useState<MindData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          const { user_id } = JSON.parse(userData);
+          const result = await dispatch(getMindData(user_id)).unwrap();
+          
+          // Find the latest entry with proper typing
+          const entries = Object.values(result) as MindData[];
+          if (entries.length > 0) {
+            const latest = entries.reduce((prev: MindData, current: MindData) => {
+              return new Date(prev.created_at) > new Date(current.created_at) ? prev : current;
+            });
+            
+            setLatestMind(latest);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching mind data:', error);
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -10,13 +44,17 @@ const MindScreen = () => {
       {/* Status Section */}
       <Text style={styles.subtitle}>Based on your journal entries, here’s a snapshot of your mental health status.</Text>
       <View style={styles.statusWrapper}>
-        <Text style={styles.statusText}>Anxious</Text>
+        <Text style={styles.statusText}>{latestMind?.title || 'Loading...'}</Text>
       </View>
 
       {/* Description Section */}
       <View style={styles.descriptionWrapper}>
         <Text style={styles.descriptionText}>
-          Your recent journal entries suggest anxiety stemming from specific concerns about upcoming deadlines at work, uncertainty about a personal relationship, and a repeated focus on health-related worries. The use of words like “worried,” “stressed,” and “nervous” combined with fragmented sentences and expressions of doubt reflect a preoccupation with these issues. Additionally, late-night journaling indicates difficulty sleeping, possibly due to racing thoughts about these challenges. These patterns point to anxiety triggered by tangible stressors in your current situation.
+          {latestMind ? 
+            latestMind.insight 
+            : 
+            "No data available yet. Please continue journaling for at least one day to receive insights about your mental health status."
+          }
         </Text>
       </View>
 
