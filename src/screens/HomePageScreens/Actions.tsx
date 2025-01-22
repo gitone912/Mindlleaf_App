@@ -17,6 +17,7 @@ const ActionScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { tasks, loading, error } = useSelector((state: RootState) => state.tasks);
   const [userId, setUserId] = React.useState<string | null>(null);
+  const [timeUntilReset, setTimeUntilReset] = React.useState<string>('');
 
   React.useEffect(() => {
     getUserData();
@@ -60,6 +61,43 @@ const ActionScreen = () => {
     }
   };
 
+  const calculateTimeUntilReset = () => {
+    const now = new Date();
+    // Get current UTC date
+    const utcNow = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds()
+    ));
+    
+    // Get next UTC midnight
+    const utcTomorrow = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + 1,
+      0, 0, 0, 0
+    ));
+    
+    const diff = utcTomorrow.getTime() - utcNow.getTime();
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    return `${hours}h ${minutes}m ${seconds}s (UTC)`;
+  };
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeUntilReset(calculateTimeUntilReset());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const renderActionItem = ({ item }: { item: any }) => (
     <View style={styles.actionRow}>
       <View style={[styles.actionItem, item.is_completed && styles.highlightedAction]}>
@@ -92,10 +130,10 @@ const ActionScreen = () => {
     );
   }
 
-  if (error) {
+  if (error || !tasks || tasks.length === 0) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.messageText}>Do Journal Sessions to get your tasks for today</Text>
       </View>
     );
   }
@@ -103,6 +141,7 @@ const ActionScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Actions</Text>
+      <Text style={styles.timerText}>Tasks reset in: {timeUntilReset}</Text>
       <Text style={styles.subheaderText}>
         Based on your journal entries, here are recommended actions that you need to complete to improve your mental health.
       </Text>
@@ -225,6 +264,20 @@ display: "flex",
     color: 'red',
     fontSize: 16,
     textAlign: 'center',
+  },
+  timerText: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 10,
+    fontFamily: "Inter-Regular",
+  },
+  messageText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    fontFamily: "Inter-Regular",
+    paddingHorizontal: 20,
   },
 });
 
