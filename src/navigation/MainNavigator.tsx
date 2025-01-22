@@ -25,6 +25,7 @@ import Type from '../screens/SessionPageScreens/Type';
 import Chat from '../screens/SessionPageScreens/Chat';
 import Prompt from '../screens/SessionPageScreens/Prompt';
 import Gratitude from '../screens/SessionPageScreens/Gratitude';
+import TypeJournal from '../screens/SessionPageScreens/TypeJournal';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -99,6 +100,7 @@ const SessionStack = () => {
       <Stack.Screen name="Monologue" component={Monologue} />
       <Stack.Screen name="Dialogue" component={Dialogue} />
       <Stack.Screen name="Type" component={Type} />
+      <Stack.Screen name="TypeJournal" component={TypeJournal} />
       <Stack.Screen name="Chat" component={Chat} />
       <Stack.Screen name="Prompt" component={Prompt} />
       <Stack.Screen name="Gratitude" component={Gratitude} />
