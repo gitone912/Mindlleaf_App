@@ -29,13 +29,6 @@ const TypeJournal = () => {
           />
         </View>
 
-        {/* Mood Section */}
-        <View style={styles.moodSection}>
-          <Pressable style={styles.button} onPress={() => {}}>
-            <Text style={styles.buttonText}>Select Mood</Text>
-          </Pressable>
-        </View>
-
         <Pressable style={styles.button} onPress={() => {}}>
           <Text style={styles.buttonText}>Complete Entry</Text>
         </Pressable>
