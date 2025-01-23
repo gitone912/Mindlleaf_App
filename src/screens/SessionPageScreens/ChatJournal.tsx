@@ -10,10 +10,11 @@ export default function ChatJournal({ navigation }: any) {
   const [inputText, setInputText] = useState('');
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGreetingLoading, setIsGreetingLoading] = useState(false);
   const dispatch = useDispatch();
 
   const startSession = async () => {
-    setIsLoading(true);
+    setIsGreetingLoading(true);
     try {
       const userData = await AsyncStorage.getItem('userData');
       const { name } = userData ? JSON.parse(userData) : { name: 'User' };
@@ -24,7 +25,7 @@ export default function ChatJournal({ navigation }: any) {
     } catch (error) {
       console.error(error);
     }
-    setIsLoading(false);
+    setIsGreetingLoading(false);
   };
 
   const handleSend = async () => {
@@ -72,20 +73,21 @@ export default function ChatJournal({ navigation }: any) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+
         <TouchableOpacity 
           style={[
             styles.sessionButton,
             isSessionActive ? styles.stopButton : styles.startButton,
-            isLoading && styles.loadingButton
+            isGreetingLoading && styles.loadingButton
           ]}
           onPress={isSessionActive ? endSession : startSession}
-          disabled={isLoading}
+          disabled={isGreetingLoading}
         >
-          {isLoading ? (
+          {isGreetingLoading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={styles.sessionButtonText}>
-              {isSessionActive ? 'End Session' : 'Start Session'}
+              {isSessionActive ? 'End Session' : 'Start'}
             </Text>
           )}
         </TouchableOpacity>
@@ -117,7 +119,7 @@ export default function ChatJournal({ navigation }: any) {
             {isLoading ? (
               <ActivityIndicator color="#FFFFFF" size="small" />
             ) : (
-              <Text style={styles.sendButtonText}>Send</Text>
+              <Text style={styles.sendButtonText}>➤</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -134,11 +136,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F7F6F0',
   },
   headerTitle: {
     fontSize: 20,
@@ -158,23 +159,27 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   botMessage: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#394239',
     alignSelf: 'flex-start',
     borderBottomLeftRadius: 5,
   },
   userMessage: {
-    backgroundColor: '#394239',
+    backgroundColor: '#F7F6F0',
     alignSelf: 'flex-end',
     borderBottomRightRadius: 5,
+    borderRadius: 12,
+borderStyle: "solid",
+borderColor: "#b2b0b0",
+borderWidth: 0.5,
   },
   messageText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#000000',
+    color: '#FFFFFF',
     fontFamily: 'Inter-Regular',
   },
   userMessageText: {
-    color: '#FFFFFF',
+    color: '#000000',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -216,7 +221,7 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: '#394239',
-    padding: 12,
+    padding: 5,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -227,7 +232,7 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 25,
     fontFamily: 'Inter-Medium',
   },
   sessionButtonText: {
