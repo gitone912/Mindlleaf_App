@@ -6,11 +6,13 @@ interface AnalyseState {
   summary: string;
   satisfactionScore: number;
   keywords: string;
+  actions: string[];
   loading: {
     compile: boolean;
     summary: boolean;
     satisfaction: boolean;
     keywords: boolean;
+    actions: boolean;
   };
   error: string | null;
   isAnalyzing: boolean;  // Add this new property
@@ -21,11 +23,13 @@ const initialState: AnalyseState = {
   summary: '',
   satisfactionScore: 0,
   keywords: '',
+  actions: [],
   loading: {
     compile: false,
     summary: false,
     satisfaction: false,
     keywords: false,
+    actions: false,
   },
   error: null,
   isAnalyzing: false,  // Add this new property
@@ -60,6 +64,31 @@ export const getKeywords = createAsyncThunk(
   async (journalEntry: string) => {
     const response = await analyseApi.getKeywords(journalEntry);
     return response.keywords;
+  }
+);
+
+export const getRecommendedActions = createAsyncThunk(
+  'analyse/getRecommendedActions',
+  async (journalEntry: string, { rejectWithValue }) => {
+    try {
+      console.log('Fetching recommended actions...');
+      const response = await analyseApi.getRecommendedActions(journalEntry);
+      console.log('Actions response:', response);
+      
+      // Check if recommendedActions is an array
+      if (Array.isArray(response.recommendedActions)) {
+        // Each item might contain multiple actions separated by commas
+        const allActions = response.recommendedActions.flatMap((item: string) => 
+          typeof item === 'string' ? item.split(',').map(action => action.trim()) : []
+        );
+        return allActions;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching actions:', error);
+      return rejectWithValue('Failed to fetch actions');
+    }
   }
 );
 
@@ -109,6 +138,22 @@ const analyseSlice = createSlice({
         state.keywords = action.payload;
         state.isAnalyzing = state.loading.compile || state.loading.summary || 
                            state.loading.satisfaction || state.loading.keywords;
+      })
+      .addCase(getRecommendedActions.pending, (state) => {
+        state.loading.actions = true;
+        state.error = null;
+      })
+      .addCase(getRecommendedActions.fulfilled, (state, action) => {
+        state.loading.actions = false;
+        state.actions = action.payload;
+        state.error = null;
+        state.isAnalyzing = state.loading.compile || state.loading.summary || 
+                           state.loading.satisfaction || state.loading.keywords ||
+                           state.loading.actions;
+      })
+      .addCase(getRecommendedActions.rejected, (state, action) => {
+        state.loading.actions = false;
+        state.error = action.payload as string;
       });
   },
 });

@@ -32,3 +32,18 @@ export const getKeywords = async (journalEntry: string) => {
   });
   return response.data;
 };
+
+export const getRecommendedActions = async (journalEntry: string) => {
+  try {
+    console.log('Making API call to get recommended actions...');
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getrecommendedactions`, {
+      language: "English",
+      journalEntry
+    });
+    console.log('API Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('API call failed:', error);
+    throw error;
+  }
+};

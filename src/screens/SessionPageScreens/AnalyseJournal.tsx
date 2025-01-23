@@ -3,21 +3,29 @@ import { useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords } from '../../store/slices/analyseSlice';
+import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions } from '../../store/slices/analyseSlice';
 
 const AnalyseJournal = () => {
   const dispatch = useDispatch<AppDispatch>();
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
-  const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing } = useSelector((state: RootState) => state.analyse);
+  const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error } = useSelector((state: RootState) => state.analyse);
 
   useEffect(() => {
     if (currentJournal?.content) {
+      console.log('Dispatching compile journal...');
       dispatch(compileJournal(currentJournal.content))
         .then((result) => {
           if (result.payload) {
-            dispatch(getJournalSummary(result.payload));
-            dispatch(getSatisfactionScore(result.payload));
-            dispatch(getKeywords(result.payload));
+            console.log('Journal compiled, dispatching other actions...');
+            // Dispatch all actions and wait for them to complete
+            Promise.all([
+              dispatch(getJournalSummary(result.payload)),
+              dispatch(getSatisfactionScore(result.payload)),
+              dispatch(getKeywords(result.payload)),
+              dispatch(getRecommendedActions(result.payload))
+            ]).then(() => {
+              console.log('All actions completed');
+            });
           }
         });
     }
@@ -31,13 +39,8 @@ const AnalyseJournal = () => {
     return '😢';
   };
 
-  const actions = [
-    "Call one old friend this week.",
-    "Set a monthly reminder to check in with friends.",
-    "Write a thank-you message to a close friend today.",
-  ];
-
-  if (isAnalyzing) {
+  // Show loading when compiling journal
+  if (loading.compile) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
         <Text style={styles.loadingText}>Analyzing your journal entry...</Text>
@@ -66,51 +69,80 @@ const AnalyseJournal = () => {
           </Text>
         </View>
 
-        {/* Mood Section */}
-        <View style={styles.moodSection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Mood</Text>
-        </Pressable>
-          <Text style={styles.moodEmoji}>{getEmoji(satisfactionScore)}</Text>
-          <Text style={styles.moodDescription}>{keywords}</Text>
-        </View>
+        {/* Only show these sections after compilation is complete */}
+        {!loading.compile && compiledJournal && (
+          <>
+            {/* Mood Section */}
+            {loading.satisfaction || loading.keywords ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Analyzing mood...</Text>
+              </View>
+            ) : (
+              <View style={styles.moodSection}>
+                <Pressable style={styles.button} onPress={() => {}}>
+                  <Text style={styles.buttonText}>Mood</Text>
+                </Pressable>
+                <Text style={styles.moodEmoji}>{getEmoji(satisfactionScore)}</Text>
+                <Text style={styles.moodDescription}>{keywords}</Text>
+              </View>
+            )}
 
-        {/* Summary Section */}
-        <View style={styles.summarySection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Summary</Text>
-        </Pressable>
-          <Text style={styles.summaryText}>{summary}</Text>
-        </View>
+            {/* Summary Section */}
+            {loading.summary ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Generating summary...</Text>
+              </View>
+            ) : (
+              <View style={styles.summarySection}>
+                <Pressable style={styles.button} onPress={() => {}}>
+                  <Text style={styles.buttonText}>Summary</Text>
+                </Pressable>
+                <Text style={styles.summaryText}>{summary}</Text>
+              </View>
+            )}
 
-        {/* Actions Section */}
-        <View style={styles.actionsSection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Actions</Text>
-        </Pressable>
-          <Text style={styles.actionDescription}>
-            Based on this journal session, here’s a list of actions recommended to improve your mental health:
-          </Text>
+            {/* Actions Section */}
+            {!loading.summary && !loading.satisfaction && (
+              <View style={styles.actionsSection}>
+                <Pressable style={styles.button} onPress={() => {}}>
+                  <Text style={styles.buttonText}>Actions</Text>
+                </Pressable>
+                <Text style={styles.actionDescription}>
+                  Based on this journal session, here’s a list of actions recommended to improve your mental health:
+                </Text>
 
-          {actions.map((action, index) => (
-        <View key={index} style={styles.actionRow}>
-          <View style={styles.textContainer}>
-            <Text style={styles.actionText}>{action}</Text>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={() => {}}>
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-        </View>
+                {loading.actions ? (
+                  <View style={styles.loadingContainer}>
+                    <Text style={styles.loadingText}>Loading actions...</Text>
+                  </View>
+                ) : error ? (
+                  <Text style={styles.errorText}>{error}</Text>
+                ) : Array.isArray(actions) && actions.length > 0 ? (
+                  actions.map((action, index) => (
+                    <View key={index} style={styles.actionRow}>
+                      <View style={styles.textContainer}>
+                        <Text style={styles.actionText}>{action}</Text>
+                      </View>
+                      <TouchableOpacity style={styles.addButton} onPress={() => {}}>
+                        <Text style={styles.addButtonText}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={styles.noActionsText}>No actions available</Text>
+                )}
+              </View>
+            )}
 
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Complete Session</Text>
-        </Pressable>
+            <Pressable style={styles.button} onPress={() => {}}>
+              <Text style={styles.buttonText}>Complete Session</Text>
+            </Pressable>
 
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Restart Session</Text>
-        </Pressable>
+            <Pressable style={styles.button} onPress={() => {}}>
+              <Text style={styles.buttonText}>Restart Session</Text>
+            </Pressable>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -274,6 +306,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Inter-Regular",
     color: "#474d41",
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  noActionsText: {
+    color: '#807d7d',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
