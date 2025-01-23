@@ -1,16 +1,49 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable } from "react-native";
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store';
+import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords } from '../../store/slices/analyseSlice';
 
 const AnalyseJournal = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
-  
+  const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing } = useSelector((state: RootState) => state.analyse);
+
+  useEffect(() => {
+    if (currentJournal?.content) {
+      dispatch(compileJournal(currentJournal.content))
+        .then((result) => {
+          if (result.payload) {
+            dispatch(getJournalSummary(result.payload));
+            dispatch(getSatisfactionScore(result.payload));
+            dispatch(getKeywords(result.payload));
+          }
+        });
+    }
+  }, [currentJournal, dispatch]);
+
+  const getEmoji = (score: number) => {
+    if (score >= 80) return '😊';
+    if (score >= 60) return '🙂';
+    if (score >= 40) return '😐';
+    if (score >= 20) return '😕';
+    return '😢';
+  };
+
   const actions = [
     "Call one old friend this week.",
     "Set a monthly reminder to check in with friends.",
     "Write a thank-you message to a close friend today.",
   ];
+
+  if (isAnalyzing) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text style={styles.loadingText}>Analyzing your journal entry...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -29,7 +62,7 @@ const AnalyseJournal = () => {
           )}
 
           <Text style={styles.body}>
-            {currentJournal?.content || 'No content available'}
+            {compiledJournal || currentJournal?.content || 'No content available'}
           </Text>
         </View>
 
@@ -38,8 +71,8 @@ const AnalyseJournal = () => {
         <Pressable style={styles.button} onPress={() => {}}>
           <Text style={styles.buttonText}>Mood</Text>
         </Pressable>
-          <Text style={styles.moodEmoji}>😊</Text>
-          <Text style={styles.moodDescription}>uplifting, reflective, and nostalgic</Text>
+          <Text style={styles.moodEmoji}>{getEmoji(satisfactionScore)}</Text>
+          <Text style={styles.moodDescription}>{keywords}</Text>
         </View>
 
         {/* Summary Section */}
@@ -47,9 +80,7 @@ const AnalyseJournal = () => {
         <Pressable style={styles.button} onPress={() => {}}>
           <Text style={styles.buttonText}>Summary</Text>
         </Pressable>
-          <Text style={styles.summaryText}>
-            A call from an old friend brightened my day, reminding me of the unique comfort and deep connection of long-standing friendships. The natural, heartfelt conversation made me reflect on how easily life can drift us apart and inspired me to be more intentional about nurturing meaningful relationships moving forward.
-          </Text>
+          <Text style={styles.summaryText}>{summary}</Text>
         </View>
 
         {/* Actions Section */}
@@ -234,6 +265,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAF0",
     fontWeight: "bold",
     
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    fontFamily: "Inter-Regular",
+    color: "#474d41",
   },
 });
 

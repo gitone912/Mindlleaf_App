@@ -6,6 +6,7 @@ import therapyReducer from './slices/therapySlice';
 import moodReducer from "./slices/moodSlice";
 import journeyReducer from './slices/journeySlice';
 import journalReducer from "./slices/journalSlice";
+import analyseReducer from "./slices/analyseSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     mood: moodReducer,
     journey: journeyReducer,
     journal: journalReducer,
+    analyse: analyseReducer,
   },
 });
 
