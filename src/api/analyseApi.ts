@@ -47,3 +47,11 @@ export const getRecommendedActions = async (journalEntry: string) => {
     throw error;
   }
 };
+
+export const getJournalTitle = async (journalEntry: string) => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getjournaltitle`, {
+    language: "English",
+    journalEntry
+  });
+  return response.data;
+};

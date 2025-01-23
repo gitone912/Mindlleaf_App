@@ -1,14 +1,16 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable } from "react-native";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable, Alert } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
-import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions } from '../../store/slices/analyseSlice';
+import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions, getJournalTitle } from '../../store/slices/analyseSlice';
+import { createTask } from '../../store/slices/actionSlice'; // Add this import
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AnalyseJournal = () => {
   const dispatch = useDispatch<AppDispatch>();
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
-  const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error } = useSelector((state: RootState) => state.analyse);
+  const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error, title } = useSelector((state: RootState) => state.analyse);
 
   useEffect(() => {
     if (currentJournal?.content) {
@@ -17,9 +19,17 @@ const AnalyseJournal = () => {
         .then((result) => {
           if (result.payload) {
             console.log('Journal compiled, dispatching other actions...');
-            // Dispatch all actions and wait for them to complete
+            // First get the summary
+            dispatch(getJournalSummary(result.payload))
+              .then((summaryResult) => {
+                if (summaryResult.payload) {
+                  // After getting summary, get the title based on it
+                  dispatch(getJournalTitle(summaryResult.payload));
+                }
+              });
+
+            // Dispatch other actions in parallel
             Promise.all([
-              dispatch(getJournalSummary(result.payload)),
               dispatch(getSatisfactionScore(result.payload)),
               dispatch(getKeywords(result.payload)),
               dispatch(getRecommendedActions(result.payload))
@@ -37,6 +47,54 @@ const AnalyseJournal = () => {
     if (score >= 40) return '😐';
     if (score >= 20) return '😕';
     return '😢';
+  };
+
+  const handleAddTask = async (taskName: string) => {
+    try {
+      // Get user data from AsyncStorage
+      const userDataString = await AsyncStorage.getItem('userData');
+      if (!userDataString) {
+        Alert.alert('Error', 'User data not found');
+        return;
+      }
+
+      const userData = JSON.parse(userDataString);
+      const userId = userData.user_id;
+
+      Alert.alert(
+        'Add Task',
+        'Do you want to add this task to your daily tasks?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Yes',
+            onPress: async () => {
+              try {
+                await dispatch(createTask({
+                  userId,
+                  taskName,
+                  completion_points: 5
+                })).unwrap();
+                
+                Alert.alert('Success', 'Task added successfully!');
+              } catch (error: any) {
+                if (error?.message?.includes('Daily task limit reached. You can only create 6 tasks per day.')) {
+                  Alert.alert('Limit Reached', 'You cannot add more than 6 tasks per day.');
+                } else {
+                  Alert.alert('Sorry', 'Daily task limit reached. You can only create 6 tasks per day.');
+                }
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error adding task:', error);
+      Alert.alert('Error', 'Failed to add task');
+    }
   };
 
   // Show loading when compiling journal
@@ -60,9 +118,15 @@ const AnalyseJournal = () => {
             })}
           </Text>
           
-          {currentJournal?.title && (
-            <Text style={styles.title}>{currentJournal.title}</Text>
-          )}
+          <View style={styles.titleContainer}>
+            {loading.title || loading.compile ? (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Generating title...</Text>
+              </View>
+            ) : title ? (
+              <Text style={styles.title}>{title}</Text>
+            ) : null}
+          </View>
 
           <Text style={styles.body}>
             {compiledJournal || currentJournal?.content || 'No content available'}
@@ -123,7 +187,10 @@ const AnalyseJournal = () => {
                       <View style={styles.textContainer}>
                         <Text style={styles.actionText}>{action}</Text>
                       </View>
-                      <TouchableOpacity style={styles.addButton} onPress={() => {}}>
+                      <TouchableOpacity 
+                        style={styles.addButton} 
+                        onPress={() => handleAddTask(action)}
+                      >
                         <Text style={styles.addButtonText}>+</Text>
                       </TouchableOpacity>
                     </View>
@@ -266,6 +333,12 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 15,
+  },
+  titleContainer: {
+    minHeight: 50,  // Adjust this value based on your needs
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 15,
   },
   textContainer: {

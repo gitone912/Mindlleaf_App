@@ -11,7 +11,7 @@ const TypeJournal = ({ navigation }: any) => {
   const handleComplete = () => {
     dispatch(setCurrentJournal({
       content: journalContent,
-      title,
+      title: '', // The title will be set during analysis
       date: new Date().toISOString(),
       type: 'type'
     }));
@@ -24,14 +24,7 @@ const TypeJournal = ({ navigation }: any) => {
         <View style={styles.card}>
           <Text style={styles.date}>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</Text>
           
-          <TextInput
-            style={styles.titleInput}
-            placeholder="Enter title..."
-            value={title}
-            onChangeText={setTitle}
-            placeholderTextColor="#807d7d"
-          />
-
+        
           <TextInput
             style={styles.bodyInput}
             placeholder="Start writing your journal entry here..."

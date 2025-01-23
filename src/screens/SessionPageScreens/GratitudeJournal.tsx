@@ -30,7 +30,7 @@ const GratitudeJournal = ({ navigation }: any) => {
   const endSession = () => {
     dispatch(setCurrentJournal({
       content: journalContent,
-      title,
+      title: '', // The title will be set during analysis
       date: new Date().toISOString(),
       type: 'gratitude'
     }));

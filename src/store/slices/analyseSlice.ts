@@ -7,12 +7,14 @@ interface AnalyseState {
   satisfactionScore: number;
   keywords: string;
   actions: string[];
+  title: string;
   loading: {
     compile: boolean;
     summary: boolean;
     satisfaction: boolean;
     keywords: boolean;
     actions: boolean;
+    title: boolean;
   };
   error: string | null;
   isAnalyzing: boolean;  // Add this new property
@@ -24,12 +26,14 @@ const initialState: AnalyseState = {
   satisfactionScore: 0,
   keywords: '',
   actions: [],
+  title: '',
   loading: {
     compile: false,
     summary: false,
     satisfaction: false,
     keywords: false,
     actions: false,
+    title: false,
   },
   error: null,
   isAnalyzing: false,  // Add this new property
@@ -89,6 +93,14 @@ export const getRecommendedActions = createAsyncThunk(
       console.error('Error fetching actions:', error);
       return rejectWithValue('Failed to fetch actions');
     }
+  }
+);
+
+export const getJournalTitle = createAsyncThunk(
+  'analyse/getJournalTitle',
+  async (journalEntry: string) => {
+    const response = await analyseApi.getJournalTitle(journalEntry);
+    return response.title;
   }
 );
 
@@ -154,6 +166,16 @@ const analyseSlice = createSlice({
       .addCase(getRecommendedActions.rejected, (state, action) => {
         state.loading.actions = false;
         state.error = action.payload as string;
+      })
+      .addCase(getJournalTitle.pending, (state) => {
+        state.loading.title = true;
+      })
+      .addCase(getJournalTitle.fulfilled, (state, action) => {
+        state.loading.title = false;
+        state.title = action.payload;
+      })
+      .addCase(getJournalTitle.rejected, (state) => {
+        state.loading.title = false;
       });
   },
 });
