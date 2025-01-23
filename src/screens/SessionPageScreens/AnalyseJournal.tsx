@@ -14,6 +14,7 @@ const AnalyseJournal = () => {
         <View style={styles.card}>
           <Text style={styles.date}>December 18, 2024</Text>
           <Text style={styles.title}>Reconnecting with Old Friends</Text>
+          {/* content */}
           <Text style={styles.body}>
             An unexpected call from an old friend completely brightened my day. It
             had been years since we last spoke, and yet, as soon as I heard their
