@@ -27,7 +27,7 @@ import Prompt from '../screens/SessionPageScreens/Prompt';
 import Gratitude from '../screens/SessionPageScreens/Gratitude';
 import TypeJournal from '../screens/SessionPageScreens/TypeJournal';
 import ChatJournal from '../screens/SessionPageScreens/ChatJournal';
-
+import AnalyseJournal from '../screens/SessionPageScreens/AnalyseJournal';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -108,6 +108,8 @@ const SessionStack = () => {
       <Stack.Screen name="ChatJournal" component={ChatJournal} />
       <Stack.Screen name="Prompt" component={Prompt} />
       <Stack.Screen name="Gratitude" component={Gratitude} />
+      <Stack.Screen name="AnalyseJournal" component={AnalyseJournal} />
+
     </Stack.Navigator>
   );
 };

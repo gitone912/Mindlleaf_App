@@ -1,9 +1,22 @@
 import * as React from "react";
 import { StyleSheet, Text, View, ScrollView, TextInput, Pressable, KeyboardAvoidingView, Platform } from "react-native";
+import { useDispatch } from 'react-redux';
+import { setCurrentJournal } from '../../store/slices/journalSlice';
 
-const TypeJournal = () => {
+const TypeJournal = ({ navigation }: any) => {
   const [journalContent, setJournalContent] = React.useState('');
   const [title, setTitle] = React.useState('');
+  const dispatch = useDispatch();
+
+  const handleComplete = () => {
+    dispatch(setCurrentJournal({
+      content: journalContent,
+      title,
+      date: new Date().toISOString(),
+      type: 'type'
+    }));
+    navigation.navigate('AnalyseJournal');
+  };
   
   return (
     <View style={styles.container}>
@@ -29,7 +42,7 @@ const TypeJournal = () => {
           />
         </View>
 
-        <Pressable style={styles.button} onPress={() => {}}>
+        <Pressable style={styles.button} onPress={handleComplete}>
           <Text style={styles.buttonText}>Complete Entry</Text>
         </Pressable>
 

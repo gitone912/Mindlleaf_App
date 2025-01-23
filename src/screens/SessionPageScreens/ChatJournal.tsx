@@ -1,52 +1,127 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setCurrentJournal } from '../../store/slices/journalSlice';
+import * as journalApi from '../../api/journalApi';
 
-export default function ChatJournal() {
-  const [messages, setMessages] = useState([
-    { id: '1', text: "Hi, Ace. How’s your day?", sender: 'bot' },
-    { id: '2', text: "It’s been rough.", sender: 'user' },
-    { id: '3', text: "Why, what happened?", sender: 'bot' },
-  ]);
-
+export default function ChatJournal({ navigation }: any) {
+  const [messages, setMessages] = useState<Array<{ id: string; text: string; sender: string }>>([]);
   const [inputText, setInputText] = useState('');
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleSend = () => {
-    if (inputText.trim() !== '') {
-      setMessages([...messages, { id: Date.now().toString(), text: inputText, sender: 'user' }]);
-      setInputText('');
+  const startSession = async () => {
+    setIsLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('userData');
+      const { name } = userData ? JSON.parse(userData) : { name: 'User' };
+      
+      const { greeting } = await journalApi.getGreeting(name);
+      setMessages([{ id: '1', text: greeting, sender: 'bot' }]);
+      setIsSessionActive(true);
+    } catch (error) {
+      console.error(error);
     }
+    setIsLoading(false);
+  };
+
+  const handleSend = async () => {
+    if (inputText.trim() === '') return;
+
+    const userMessage = { id: Date.now().toString(), text: inputText, sender: 'user' };
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+
+    try {
+      setIsLoading(true);
+      const userData = await AsyncStorage.getItem('userData');
+      const { name } = userData ? JSON.parse(userData) : { name: 'User' };
+
+      const history = messages.map(m => `${m.sender === 'user' ? 'User: ' : 'bot: '}${m.text}`);
+      const { response } = await journalApi.sendMessage(inputText, name, history);
+
+      setMessages(prev => [...prev, { id: Date.now().toString(), text: response, sender: 'bot' }]);
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+
+  const endSession = () => {
+    const content = messages.map(m => `${m.sender === 'user' ? 'User: ' : 'bot: '}${m.text}`).join('\n\n');
+    dispatch(setCurrentJournal({
+      content,
+      title: 'Chat Session',
+      date: new Date().toISOString(),
+      type: 'chat',
+      chatHistory: messages.map(m => m.text)
+    }));
+    navigation.navigate('AnalyseJournal');
   };
 
   const renderItem = ({ item }: { item: { id: string; text: string; sender: string } }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sender === 'bot' ? styles.botMessage : styles.userMessage,
-      ]}
-    >
-      <Text style={styles.messageText}>{item.text}</Text>
+    <View style={[styles.messageContainer, item.sender === 'bot' ? styles.botMessage : styles.userMessage]}>
+      <Text style={[styles.messageText, item.sender === 'user' && styles.userMessageText]}>
+        {item.text}
+      </Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={[
+            styles.sessionButton,
+            isSessionActive ? styles.stopButton : styles.startButton,
+            isLoading && styles.loadingButton
+          ]}
+          onPress={isSessionActive ? endSession : startSession}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.sessionButtonText}>
+              {isSessionActive ? 'End Session' : 'Start Session'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={messages}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.chatContainer}
+        showsVerticalScrollIndicator={false}
       />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="The"
-          value={inputText}
-          onChangeText={setInputText}
-        />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
-      </View>
+
+      {isSessionActive && (
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type your message..."
+            value={inputText}
+            onChangeText={setInputText}
+            placeholderTextColor="#666"
+            multiline
+          />
+          <TouchableOpacity 
+            style={[styles.sendButton, !inputText.trim() && styles.disabledButton]} 
+            onPress={handleSend}
+            disabled={!inputText.trim() || isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.sendButtonText}>Send</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -56,51 +131,108 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F7F6F0',
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    backgroundColor: '#FFFFFF',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#394239',
+    fontFamily: 'Inter-SemiBold',
+  },
   chatContainer: {
     padding: 16,
+    flexGrow: 1,
   },
   messageContainer: {
     marginBottom: 12,
-    padding: 12,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 20,
     maxWidth: '80%',
+    elevation: 1,
   },
   botMessage: {
-    backgroundColor: '#394239',
+    backgroundColor: '#E8F5E9',
     alignSelf: 'flex-start',
+    borderBottomLeftRadius: 5,
   },
   userMessage: {
-    backgroundColor: '#ECE9E0',
+    backgroundColor: '#394239',
     alignSelf: 'flex-end',
+    borderBottomRightRadius: 5,
   },
   messageText: {
-    color: '#000',
-    fontSize: 16,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#000000',
+    fontFamily: 'Inter-Regular',
+  },
+  userMessageText: {
+    color: '#FFFFFF',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
   },
   input: {
     flex: 1,
-    height: 40,
+    minHeight: 40,
+    maxHeight: 100,
     borderWidth: 1,
     borderColor: '#D3D3D3',
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     backgroundColor: '#F7F6F0',
+    marginRight: 8,
+    fontSize: 14,
+    color: '#000000',
+  },
+  sessionButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  startButton: {
+    backgroundColor: '#394239',
+  },
+  stopButton: {
+    backgroundColor: '#8B0000',
+  },
+  loadingButton: {
+    backgroundColor: '#2a332a',
   },
   sendButton: {
-    marginLeft: 8,
     backgroundColor: '#394239',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 60,
+  },
+  disabledButton: {
+    backgroundColor: '#CCCCCC',
   },
   sendButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+  },
+  sessionButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
 });
