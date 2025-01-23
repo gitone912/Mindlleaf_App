@@ -1,17 +1,27 @@
 import * as React from "react";
 import { StyleSheet, Text, Pressable, View } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type SessionStackParamList = {
+  SessionMain: undefined;
+  PromptJournal: undefined;
+};
+
+type SessionScreenNavigationProp = StackNavigationProp<SessionStackParamList>;
 
 const Prompt = () => {
+  const navigation = useNavigation<SessionScreenNavigationProp>();
+
   const handleSessionStart = () => {
-    // Logic for starting the session can be added here
-    console.log("Session started!");
+    navigation.navigate('PromptJournal');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Prompt</Text>
       <Text style={styles.description}>
-        Reflect and express your thoughts freely by speaking to the microphone.
+        Express your thoughts through guided prompts.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>

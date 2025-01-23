@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setCurrentJournal } from '../../store/slices/journalSlice';
 import * as journalApi from '../../api/journalApi';
 
-export default function ChatJournal({ navigation }: any) {
+const ChatJournal = ({ navigation }: any) => {
   const [messages, setMessages] = useState<Array<{ id: string; text: string; sender: string }>>([]);
   const [inputText, setInputText] = useState('');
   const [isSessionActive, setIsSessionActive] = useState(false);
@@ -241,3 +241,5 @@ borderWidth: 0.5,
     fontFamily: 'Inter-Medium',
   },
 });
+
+export default ChatJournal;

@@ -28,6 +28,8 @@ import Gratitude from '../screens/SessionPageScreens/Gratitude';
 import TypeJournal from '../screens/SessionPageScreens/TypeJournal';
 import ChatJournal from '../screens/SessionPageScreens/ChatJournal';
 import AnalyseJournal from '../screens/SessionPageScreens/AnalyseJournal';
+import PromptJournal from '../screens/SessionPageScreens/PromptJournal';
+import GratitudeJournal from '../screens/SessionPageScreens/GratitudeJournal';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -109,7 +111,8 @@ const SessionStack = () => {
       <Stack.Screen name="Prompt" component={Prompt} />
       <Stack.Screen name="Gratitude" component={Gratitude} />
       <Stack.Screen name="AnalyseJournal" component={AnalyseJournal} />
-
+      <Stack.Screen name="PromptJournal" component={PromptJournal} />
+      <Stack.Screen name="GratitudeJournal" component={GratitudeJournal} />
     </Stack.Navigator>
   );
 };

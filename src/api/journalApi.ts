@@ -34,3 +34,28 @@ export const sendMessage = async (
     throw error;
   }
 };
+
+// Make sure these exports are properly exposed
+export const getGratitudePrompt = async (userId: string, language = 'English') => {
+  try {
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getgratitude`, {
+      language,
+      userId
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getJournalPrompt = async (userId: string, language = 'English') => {
+  try {
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getprompt`, {
+      language,
+      userId
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

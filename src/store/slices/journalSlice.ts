@@ -5,7 +5,7 @@ interface JournalState {
     content: string;
     title: string;
     date: string;
-    type: 'chat' | 'type';
+    type: 'chat' | 'type' | 'prompt' | 'gratitude';
     chatHistory?: string[];
   } | null;
 }

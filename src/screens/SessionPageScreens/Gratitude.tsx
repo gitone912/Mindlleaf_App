@@ -1,17 +1,27 @@
 import * as React from "react";
 import { StyleSheet, Text, Pressable, View } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type SessionStackParamList = {
+  SessionMain: undefined;
+  GratitudeJournal: undefined;
+};
+
+type SessionScreenNavigationProp = StackNavigationProp<SessionStackParamList>;
 
 const Gratitude = () => {
+  const navigation = useNavigation<SessionScreenNavigationProp>();
+
   const handleSessionStart = () => {
-    // Logic for starting the session can be added here
-    console.log("Session started!");
+    navigation.navigate('GratitudeJournal');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Gratitude</Text>
       <Text style={styles.description}>
-        Reflect and express your thoughts freely by speaking to the microphone.
+        Practice gratitude by writing about what you're thankful for.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>
