@@ -1,74 +1,81 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store";
+import { fetchJournals } from "../../store/slices/editGetJournalSlice";
 
 type JournalStackParamList = {
   JournalMain: undefined;
   UserJournals: undefined;
-  ReadJournal: undefined
+  ReadJournal: { journalId: string };
 };
 
 type JournalScreenNavigationProp = StackNavigationProp<JournalStackParamList, 'JournalMain'>;
 
 const UserJournals = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { entries, loading, error } = useSelector((state: RootState) => state.editGetJournal);
   const navigation = useNavigation<JournalScreenNavigationProp>();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchJournals());
+    }, [dispatch])
+  );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>Loading journals...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  if (Object.keys(entries).length === 0) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>No journals found</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-      {entries.map((entry, index) => (
-        <TouchableOpacity key={index} style={styles.entryContainer} onPress={() => navigation.navigate('ReadJournal')}>
-          <View style={styles.dateContainer} >
-            <Text style={styles.date}>{entry.date}</Text>
-            <Text style={styles.month}>Dec</Text>
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>{entry.title}</Text>
-            <Text style={styles.description}>{entry.description}</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      {Object.entries(entries)
+        .sort((a, b) => new Date(b[1].updated_at).getTime() - new Date(a[1].updated_at).getTime())
+        .map(([journalId, entry]) => (
+          <TouchableOpacity 
+            key={journalId} 
+            style={styles.entryContainer} 
+            onPress={() => navigation.navigate('ReadJournal', { journalId })}
+          >
+            <View style={styles.dateContainer}>
+              <Text style={styles.date}>
+                {new Date(entry.updated_at).getDate()}
+              </Text>
+              <Text style={styles.month}>
+                {new Date(entry.updated_at).toLocaleString('default', { month: 'short' })}
+              </Text>
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{entry.type}</Text>
+              <Text style={styles.description}>{entry.content.substring(0, 100)}...</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
     </ScrollView>
   );
 };
-
-const entries = [
-  {
-    date: "18",
-    title: "Reconnecting with Old Friends",
-    description:
-      "Catching up with an old friend was uplifting. Rekindling bonds reminded me of shared history. Staying connected holds deep value.",
-  },
-  {
-    date: "17",
-    title: "A Lesson in Patience",
-    description:
-      "A challenging morning taught me to practice patience. Slowing down revealed unexpected opportunities. The experience reshaped my perspective on delays.",
-  },
-  {
-    date: "16",
-    title: "The Power of a Smile",
-    description:
-      "A smile led to an unexpected, uplifting connection. This moment reinforced the value of simple kindness. Small gestures carry great power.",
-  },
-  {
-    date: "15",
-    title: "Finding Joy in the Ordinary",
-    description:
-      "Ordinary routines brought unexpected joy. Savoring small pleasures added richness to the day. Gratitude anchored my perspective.",
-  },
-  {
-    date: "14",
-    title: "Growth Through Discomfort",
-    description:
-      "Facing discomfort brought clarity and growth. Difficult moments often lead to positive change. Learning from challenges strengthened me.",
-  },
-  {
-    date: "13",
-    title: "Nature’s Whisper",
-    description:
-      "A walk in nature provided peace and renewal. Simple natural beauty has restorative power. I plan to connect with it more.",
-  },
-];
 
 const styles = StyleSheet.create({
   container: {
@@ -122,6 +129,10 @@ const styles = StyleSheet.create({
     color: "#807d7d",
     width: 235,
     height: 42,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

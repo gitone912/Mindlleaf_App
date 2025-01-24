@@ -1,99 +1,132 @@
-import * as React from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRoute, RouteProp } from "@react-navigation/native";
+import { AppDispatch, RootState } from "../../store";
+import { editJournal } from "../../store/slices/editGetJournalSlice";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable, TextInput, Alert } from "react-native";
+
+type RouteParams = {
+  ReadJournal: {
+    journalId: string;
+  };
+};
 
 const ReadJournal = () => {
-  const actions = [
-    "Call one old friend this week.",
-    "Set a monthly reminder to check in with friends.",
-    "Write a thank-you message to a close friend today.",
-  ];
+  const route = useRoute<RouteProp<RouteParams, 'ReadJournal'>>();
+  const { journalId } = route.params;
+  const dispatch = useDispatch<AppDispatch>();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState('');
+  
+  const journal = useSelector((state: RootState) => 
+    state.editGetJournal.entries[journalId]
+  );
+
+  useEffect(() => {
+    if (journal) {
+      setEditedContent(journal.content);
+    }
+  }, [journal]);
+
+  const handleEdit = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+
+    try {
+      await dispatch(editJournal({ 
+        journalId, 
+        data: {
+          content: editedContent,
+          moodEmoji: journal.mood_emoji,
+          moodKeywords: journal.mood_keywords,
+          actions: journal.actions,
+          summary: journal.summary,
+          type: journal.type
+        }
+      })).unwrap();
+      setIsEditing(false);
+      Alert.alert(
+        "Success",
+        "Journal updated successfully!",
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Failed to update journal",
+        [{ text: "OK" }]
+      );
+      console.error('Failed to update journal:', error);
+    }
+  };
+
+  if (!journal) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>Loading journal...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.card}>
-          <Text style={styles.date}>December 18, 2024</Text>
-          <Text style={styles.title}>Reconnecting with Old Friends</Text>
-          <Text style={styles.body}>
-            An unexpected call from an old friend completely brightened my day. It
-            had been years since we last spoke, and yet, as soon as I heard their
-            voice, it felt like no time had passed at all. We dove into a lively
-            conversation, reminiscing about the adventures and mischief we shared
-            when life seemed a little simpler and freer. There was laughter, a
-            hint of nostalgia, and a realization that some connections remain
-            deeply rooted no matter how much time has gone by.
-
-            We spoke about everything—our families, careers, dreams, and even
-            some of the struggles we’ve faced since we last connected. What stood
-            out most was how natural it felt to share these updates, as though
-            the foundation of trust and understanding we built years ago remained
-            untouched. It reminded me of the unique beauty of old friendships:
-            they carry a sense of comfort, familiarity, and shared history that
-            can’t be replicated elsewhere.
-
-            At the same time, I couldn’t help but think about how easily life
-            gets in the way of maintaining relationships. The years flew by so
-            quickly, and neither of us made the effort to reach out until now.
-            This call was a wake-up call—a reminder that nurturing connections
-            like these takes intention and effort. Friendships this meaningful
-            are rare and deserve to be valued.
-
-            I ended the conversation feeling lighter, happier, and more motivated
-            to reconnect with others I may have unintentionally drifted away
-            from. Life is too short to let time and distance weaken the bonds we
-            hold dear. From now on, I want to be more proactive in keeping these
-            connections alive and thriving. There’s something truly special about
-            old friends—they’re like a mirror reflecting a part of yourself that
-            only they can understand. I don’t want to lose that again.
+          <Text style={styles.date}>
+            {new Date(journal.updated_at).toLocaleDateString()}
           </Text>
+          <Text style={styles.title}>{journal.type}</Text>
+          {isEditing ? (
+            <TextInput
+              style={styles.editInput}
+              multiline
+              value={editedContent}
+              onChangeText={setEditedContent}
+            />
+          ) : (
+            <Text style={styles.body}>{journal.content}</Text>
+          )}
         </View>
 
-        {/* Mood Section */}
         <View style={styles.moodSection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Mood</Text>
-        </Pressable>
-          <Text style={styles.moodEmoji}>😊</Text>
-          <Text style={styles.moodDescription}>uplifting, reflective, and nostalgic</Text>
+          <Pressable style={styles.button} onPress={() => {}}>
+            <Text style={styles.buttonText}>Mood</Text>
+          </Pressable>
+          <Text style={styles.moodEmoji}>{journal.mood_emoji}</Text>
+          <Text style={styles.moodDescription}>
+            {journal.mood_keywords.join(', ')}
+          </Text>
         </View>
 
-        {/* Summary Section */}
         <View style={styles.summarySection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Summary</Text>
-        </Pressable>
-          <Text style={styles.summaryText}>
-            A call from an old friend brightened my day, reminding me of the unique comfort and deep connection of long-standing friendships. The natural, heartfelt conversation made me reflect on how easily life can drift us apart and inspired me to be more intentional about nurturing meaningful relationships moving forward.
-          </Text>
+          <Pressable style={styles.button} onPress={() => {}}>
+            <Text style={styles.buttonText}>Summary</Text>
+          </Pressable>
+          <Text style={styles.summaryText}>{journal.summary}</Text>
         </View>
 
-        {/* Actions Section */}
         <View style={styles.actionsSection}>
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Actions</Text>
-        </Pressable>
-          <Text style={styles.actionDescription}>
-            Based on this journal session, here’s a list of actions recommended to improve your mental health:
+          <Pressable style={styles.button} onPress={() => {}}>
+            <Text style={styles.buttonText}>Actions</Text>
+          </Pressable>
+          {journal.actions.map((action, index) => (
+            <View key={index} style={styles.actionRow}>
+              <View style={styles.textContainer}>
+                <Text style={styles.actionText}>{action}</Text>
+              </View>
+              <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+
+        <Pressable style={styles.button} onPress={handleEdit}>
+          <Text style={styles.buttonText}>
+            {isEditing ? 'Save Changes' : 'Edit Journal'}
           </Text>
-
-          {actions.map((action, index) => (
-        <View key={index} style={styles.actionRow}>
-          <View style={styles.textContainer}>
-            <Text style={styles.actionText}>{action}</Text>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={() => {}}>
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-        </View>
-
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Complete Session</Text>
-        </Pressable>
-
-        <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.buttonText}>Restart Session</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -249,6 +282,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAF0",
     fontWeight: "bold",
     
+  },
+  editInput: {
+    fontSize: 12,
+    lineHeight: 20,
+    textAlign: 'justify',
+    fontFamily: 'Inter-Regular',
+    color: '#000',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
