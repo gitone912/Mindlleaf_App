@@ -7,8 +7,10 @@ import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, g
 import { createTask } from '../../store/slices/actionSlice'; // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createJournal } from '../../api/analyseApi';
+import { useNavigation } from '@react-navigation/native';
 
 const AnalyseJournal = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch<AppDispatch>();
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
   const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error, title } = useSelector((state: RootState) => state.analyse);
@@ -133,7 +135,12 @@ const AnalyseJournal = () => {
 
                 const response = await createJournal(journalData);
                 console.log('Journal created successfully:', response);
-                Alert.alert('Success', 'Journal entry saved successfully!');
+                Alert.alert('Success', 'Journal entry saved successfully!', [
+                  {
+                    text: 'OK',
+                    onPress: () => navigation.navigate('SessionMain' as never)
+                  }
+                ]);
               } catch (error: any) {
                 console.error('Journal creation error:', error);
                 Alert.alert(
@@ -149,6 +156,23 @@ const AnalyseJournal = () => {
       console.error('Error handling complete session:', error);
       Alert.alert('Error', 'Something went wrong while saving the journal');
     }
+  };
+
+  const handleRestartSession = () => {
+    Alert.alert(
+      'Restart Session',
+      'Are you sure you want to restart the session?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => navigation.navigate('SessionMain' as never)
+        },
+      ]
+    );
   };
 
   // Show loading when compiling journal
@@ -261,7 +285,7 @@ const AnalyseJournal = () => {
               <Text style={styles.buttonText}>Complete Session</Text>
             </Pressable>
 
-            <Pressable style={styles.button} onPress={() => {}}>
+            <Pressable style={styles.button} onPress={handleRestartSession}>
               <Text style={styles.buttonText}>Restart Session</Text>
             </Pressable>
           </>
