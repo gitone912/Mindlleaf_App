@@ -124,7 +124,7 @@ const AnalyseJournal = () => {
                 const keywordsArray = keywords ? keywords.split(',').map(k => k.trim()) : [];
                 const journalData = {
                   userId: userData.user_id,
-                  type: 'personal',
+                  type: title || 'Untitled Journal', // Use title instead of 'personal'
                   originalContent: currentJournal?.content || '',
                   content: compiledJournal || '',
                   moodEmoji: getEmoji(satisfactionScore),
