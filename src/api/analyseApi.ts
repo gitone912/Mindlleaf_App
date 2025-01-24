@@ -55,3 +55,31 @@ export const getJournalTitle = async (journalEntry: string) => {
   });
   return response.data;
 };
+
+export const createJournal = async (journalData: {
+  userId: string;
+  type: string;
+  originalContent: string;
+  content: string;
+  moodEmoji: string;
+  moodKeywords: string[];
+  summary: string;
+  actions: string[];
+}) => {
+  try {
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/journal/create`, journalData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 10000, // 10 second timeout
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Journal creation error details:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    throw new Error(error.response?.data?.message || 'Failed to create journal entry');
+  }
+};

@@ -6,6 +6,7 @@ import { RootState, AppDispatch } from '../../store';
 import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions, getJournalTitle } from '../../store/slices/analyseSlice';
 import { createTask } from '../../store/slices/actionSlice'; // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createJournal } from '../../api/analyseApi';
 
 const AnalyseJournal = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -97,11 +98,66 @@ const AnalyseJournal = () => {
     }
   };
 
+  const handleCompleteSession = async () => {
+    try {
+      const userDataString = await AsyncStorage.getItem('userData');
+      if (!userDataString) {
+        Alert.alert('Error', 'User data not found');
+        return;
+      }
+      const userData = JSON.parse(userDataString);
+
+      Alert.alert(
+        'Complete Session',
+        'Do you want to save this journal entry?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Yes',
+            onPress: async () => {
+              try {
+                const keywordsArray = keywords ? keywords.split(',').map(k => k.trim()) : [];
+                const journalData = {
+                  userId: userData.user_id,
+                  type: 'personal',
+                  originalContent: currentJournal?.content || '',
+                  content: compiledJournal || '',
+                  moodEmoji: getEmoji(satisfactionScore),
+                  moodKeywords: keywordsArray,
+                  summary: summary || '',
+                  actions: actions || [],
+                };
+
+                const response = await createJournal(journalData);
+                console.log('Journal created successfully:', response);
+                Alert.alert('Success', 'Journal entry saved successfully!');
+              } catch (error: any) {
+                console.error('Journal creation error:', error);
+                Alert.alert(
+                  'Error',
+                  error.message || 'Failed to save journal entry. Please try again.'
+                );
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error handling complete session:', error);
+      Alert.alert('Error', 'Something went wrong while saving the journal');
+    }
+  };
+
   // Show loading when compiling journal
   if (loading.compile) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <Text style={styles.loadingText}>Analyzing your journal entry...</Text>
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Analyzing your journal entry...</Text>
+        </View>
       </View>
     );
   }
@@ -201,7 +257,7 @@ const AnalyseJournal = () => {
               </View>
             )}
 
-            <Pressable style={styles.button} onPress={() => {}}>
+            <Pressable style={styles.button} onPress={handleCompleteSession}>
               <Text style={styles.buttonText}>Complete Session</Text>
             </Pressable>
 
