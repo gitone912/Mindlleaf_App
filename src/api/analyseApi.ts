@@ -83,3 +83,16 @@ export const createJournal = async (journalData: {
     throw new Error(error.response?.data?.message || 'Failed to create journal entry');
   }
 };
+
+export const updateJourneyStreak = async (userId: string, utcOffset: number) => {
+  try {
+    const response = await axios.post(`${BASE_URL_AUTH}/v1/journey/update`, {
+      userId,
+      utcOffset
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Journey update error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to update journey streak');
+  }
+};

@@ -6,7 +6,7 @@ import { RootState, AppDispatch } from '../../store';
 import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions, getJournalTitle } from '../../store/slices/analyseSlice';
 import { createTask } from '../../store/slices/actionSlice'; // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createJournal } from '../../api/analyseApi';
+import * as analyseApi from '../../api/analyseApi';  // Add this import
 import { useNavigation } from '@react-navigation/native';
 
 const AnalyseJournal = () => {
@@ -133,8 +133,15 @@ const AnalyseJournal = () => {
                   actions: actions || [],
                 };
 
-                const response = await createJournal(journalData);
+                // Save journal entry
+                const response = await analyseApi.createJournal(journalData);
                 console.log('Journal created successfully:', response);
+
+                // Update journey streak
+                const utcOffset = -(new Date().getTimezoneOffset() / 60);
+                const journeyResponse = await analyseApi.updateJourneyStreak(userData.user_id, utcOffset);
+                console.log('Journey streak updated:', journeyResponse);
+
                 Alert.alert('Success', 'Journal entry saved successfully!', [
                   {
                     text: 'OK',
@@ -142,7 +149,7 @@ const AnalyseJournal = () => {
                   }
                 ]);
               } catch (error: any) {
-                console.error('Journal creation error:', error);
+                console.error('Error:', error);
                 Alert.alert(
                   'Error',
                   error.message || 'Failed to save journal entry. Please try again.'
