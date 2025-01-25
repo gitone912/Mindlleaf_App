@@ -122,6 +122,11 @@ const AnalyseJournal = () => {
             onPress: async () => {
               try {
                 const keywordsArray = keywords ? keywords.split(',').map(k => k.trim()) : [];
+                // Convert actions to proper format
+                const actionsArray = actions?.recommendedActions 
+                  ? actions.recommendedActions.split(',').map(a => a.trim()) 
+                  : [];
+
                 const journalData = {
                   userId: userData.user_id,
                   type: title || 'Untitled Journal', // Use title instead of 'personal'
@@ -130,7 +135,7 @@ const AnalyseJournal = () => {
                   moodEmoji: getEmoji(satisfactionScore),
                   moodKeywords: keywordsArray,
                   summary: summary || '',
-                  actions: actions || [],
+                  actions: actionsArray, // Now this is a string array
                 };
 
                 // Save journal entry
@@ -180,6 +185,12 @@ const AnalyseJournal = () => {
         },
       ]
     );
+  };
+
+  // Add this helper function
+  const getActionsList = () => {
+    if (!actions?.recommendedActions) return [];
+    return actions.recommendedActions.split(',').map(action => action.trim());
   };
 
   // Show loading when compiling journal
@@ -268,8 +279,8 @@ const AnalyseJournal = () => {
                   </View>
                 ) : error ? (
                   <Text style={styles.errorText}>{error}</Text>
-                ) : Array.isArray(actions) && actions.length > 0 ? (
-                  actions.map((action, index) => (
+                ) : actions?.recommendedActions ? (
+                  getActionsList().map((action, index) => (
                     <View key={index} style={styles.actionRow}>
                       <View style={styles.textContainer}>
                         <Text style={styles.actionText}>{action}</Text>

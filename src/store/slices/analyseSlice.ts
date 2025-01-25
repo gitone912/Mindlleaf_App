@@ -6,7 +6,7 @@ interface AnalyseState {
   summary: string;
   satisfactionScore: number;
   keywords: string;
-  actions: string[];
+  actions: { recommendedActions: string } | null;  // Update this type
   title: string;
   loading: {
     compile: boolean;
@@ -25,7 +25,7 @@ const initialState: AnalyseState = {
   summary: '',
   satisfactionScore: 0,
   keywords: '',
-  actions: [],
+  actions: null,  // Update this
   title: '',
   loading: {
     compile: false,
@@ -78,17 +78,7 @@ export const getRecommendedActions = createAsyncThunk(
       console.log('Fetching recommended actions...');
       const response = await analyseApi.getRecommendedActions(journalEntry);
       console.log('Actions response:', response);
-      
-      // Check if recommendedActions is an array
-      if (Array.isArray(response.recommendedActions)) {
-        // Each item might contain multiple actions separated by commas
-        const allActions = response.recommendedActions.flatMap((item: string) => 
-          typeof item === 'string' ? item.split(',').map(action => action.trim()) : []
-        );
-        return allActions;
-      }
-      
-      return [];
+      return response;  // Return the whole response object
     } catch (error) {
       console.error('Error fetching actions:', error);
       return rejectWithValue('Failed to fetch actions');

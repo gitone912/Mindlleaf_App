@@ -1,33 +1,38 @@
 import axios from 'axios';
 import { BASE_URL_AUTH } from './baseUrls';
+import { getUserSettings } from './userSettings';
 
 export const compileJournal = async (content: string) => {
+  const settings = await getUserSettings();
   const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/compilejournal`, {
-    language: "English",
+    language: settings.language,
     chatHistory: [content]
   });
   return response.data;
 };
 
 export const getJournalSummary = async (journalEntry: string) => {
+  const settings = await getUserSettings();
   const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/journalsummary`, {
-    language: "English",
+    language: settings.language,
     journalEntry
   });
   return response.data;
 };
 
 export const getSatisfactionScore = async (journalEntry: string) => {
+  const settings = await getUserSettings();
   const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/satisfactionscore`, {
-    language: "English",
+    language: settings.language,
     journalEntry
   });
   return response.data;
 };
 
 export const getKeywords = async (journalEntry: string) => {
+  const settings = await getUserSettings();
   const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getkeywords`, {
-    language: "English",
+    language: settings.language,
     journalEntry
   });
   return response.data;
@@ -36,8 +41,9 @@ export const getKeywords = async (journalEntry: string) => {
 export const getRecommendedActions = async (journalEntry: string) => {
   try {
     console.log('Making API call to get recommended actions...');
+    const settings = await getUserSettings();
     const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getrecommendedactions`, {
-      language: "English",
+      language: settings.language,
       journalEntry
     });
     console.log('API Response:', response.data);
@@ -49,8 +55,9 @@ export const getRecommendedActions = async (journalEntry: string) => {
 };
 
 export const getJournalTitle = async (journalEntry: string) => {
+  const settings = await getUserSettings();
   const response = await axios.post(`${BASE_URL_AUTH}/v1/gpt/getjournaltitle`, {
-    language: "English",
+    language: settings.language,
     journalEntry
   });
   return response.data;
