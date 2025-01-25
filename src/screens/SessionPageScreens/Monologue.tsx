@@ -1,10 +1,20 @@
 import * as React from "react";
 import { StyleSheet, Text, Pressable, View } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type SessionStackParamList = {
+  SessionMain: undefined;
+  MonologueJournal: undefined;
+};
+
+type SessionScreenNavigationProp = StackNavigationProp<SessionStackParamList>;
 
 const Monologue = () => {
+  const navigation = useNavigation<SessionScreenNavigationProp>();
+
   const handleSessionStart = () => {
-    // Logic for starting the session can be added here
-    console.log("Session started!");
+    navigation.navigate('MonologueJournal');
   };
 
   return (
