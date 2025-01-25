@@ -7,10 +7,13 @@ import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, g
 import { createTask } from '../../store/slices/actionSlice'; // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as analyseApi from '../../api/analyseApi';  // Add this import
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
+import LoadingAnimation from '../../components/LoadingAnimation';
 
-const AnalyseJournal = () => {
-  const navigation = useNavigation();
+type NavigationProps = NavigationProp<ParamListBase>;
+
+const AnalyseJournal: React.FC = () => {
+  const navigation = useNavigation<NavigationProps>();
   const dispatch = useDispatch<AppDispatch>();
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
   const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error, title } = useSelector((state: RootState) => state.analyse);
@@ -150,7 +153,7 @@ const AnalyseJournal = () => {
                 Alert.alert('Success', 'Journal entry saved successfully!', [
                   {
                     text: 'OK',
-                    onPress: () => navigation.navigate('SessionMain' as never)
+                    onPress: () => navigation.navigate('SessionMain')
                   }
                 ]);
               } catch (error: any) {
@@ -181,7 +184,7 @@ const AnalyseJournal = () => {
         },
         {
           text: 'Yes',
-          onPress: () => navigation.navigate('SessionMain' as never)
+          onPress: () => navigation.navigate('SessionMain')
         },
       ]
     );
@@ -193,13 +196,11 @@ const AnalyseJournal = () => {
     return actions.recommendedActions.split(',').map(action => action.trim());
   };
 
-  // Show loading when compiling journal
+  // Replace the loading view with the new component
   if (loading.compile) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Analyzing your journal entry...</Text>
-        </View>
+      <View style={[styles.container, styles.centerContent]}>
+        <LoadingAnimation message="Analyzing your journal entry..." />
       </View>
     );
   }
@@ -218,9 +219,7 @@ const AnalyseJournal = () => {
           
           <View style={styles.titleContainer}>
             {loading.title || loading.compile ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Generating title...</Text>
-              </View>
+              <LoadingAnimation message="Generating title..." />
             ) : title ? (
               <Text style={styles.title}>{title}</Text>
             ) : null}
@@ -236,9 +235,7 @@ const AnalyseJournal = () => {
           <>
             {/* Mood Section */}
             {loading.satisfaction || loading.keywords ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Analyzing mood...</Text>
-              </View>
+              <LoadingAnimation message="Analyzing mood..." />
             ) : (
               <View style={styles.moodSection}>
                 <Pressable style={styles.button} onPress={() => {}}>
@@ -251,9 +248,7 @@ const AnalyseJournal = () => {
 
             {/* Summary Section */}
             {loading.summary ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Generating summary...</Text>
-              </View>
+              <LoadingAnimation message="Generating summary..." />
             ) : (
               <View style={styles.summarySection}>
                 <Pressable style={styles.button} onPress={() => {}}>
@@ -264,39 +259,26 @@ const AnalyseJournal = () => {
             )}
 
             {/* Actions Section */}
-            {!loading.summary && !loading.satisfaction && (
-              <View style={styles.actionsSection}>
-                <Pressable style={styles.button} onPress={() => {}}>
-                  <Text style={styles.buttonText}>Actions</Text>
-                </Pressable>
-                <Text style={styles.actionDescription}>
-                  Based on this journal session, here’s a list of actions recommended to improve your mental health:
-                </Text>
-
-                {loading.actions ? (
-                  <View style={styles.loadingContainer}>
-                    <Text style={styles.loadingText}>Loading actions...</Text>
+            {loading.actions ? (
+              <LoadingAnimation message="Loading recommended actions..." />
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : actions?.recommendedActions ? (
+              getActionsList().map((action, index) => (
+                <View key={index} style={styles.actionRow}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.actionText}>{action}</Text>
                   </View>
-                ) : error ? (
-                  <Text style={styles.errorText}>{error}</Text>
-                ) : actions?.recommendedActions ? (
-                  getActionsList().map((action, index) => (
-                    <View key={index} style={styles.actionRow}>
-                      <View style={styles.textContainer}>
-                        <Text style={styles.actionText}>{action}</Text>
-                      </View>
-                      <TouchableOpacity 
-                        style={styles.addButton} 
-                        onPress={() => handleAddTask(action)}
-                      >
-                        <Text style={styles.addButtonText}>+</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ))
-                ) : (
-                  <Text style={styles.noActionsText}>No actions available</Text>
-                )}
-              </View>
+                  <TouchableOpacity 
+                    style={styles.addButton} 
+                    onPress={() => handleAddTask(action)}
+                  >
+                    <Text style={styles.addButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noActionsText}>No actions available</Text>
             )}
 
             <Pressable style={styles.button} onPress={handleCompleteSession}>
@@ -469,14 +451,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     
   },
-  loadingContainer: {
+  centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   loadingText: {
     fontSize: 16,
-    fontFamily: "Inter-Regular",
+    fontFamily: "Inter-Medium",
     color: "#474d41",
+    marginTop: 10,
   },
   errorText: {
     color: 'red',
