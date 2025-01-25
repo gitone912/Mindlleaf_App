@@ -8,6 +8,7 @@ import journeyReducer from './slices/journeySlice';
 import journalReducer from "./slices/journalSlice";
 import analyseReducer from "./slices/analyseSlice";
 import editGetJournalReducer from "./slices/editGetJournalSlice";
+import settingsReducer from "./slices/settingsSlice";
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
     journal: journalReducer,
     analyse: analyseReducer,
     editGetJournal: editGetJournalReducer,
+    settings: settingsReducer,
   },
 });
 
