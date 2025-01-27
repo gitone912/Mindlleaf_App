@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, StyleSheet, Image, View, Pressable } from "react-native";
+import { Text, StyleSheet, Image, View, Pressable, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
@@ -20,7 +20,7 @@ const SessionScreen = () => {
   const navigation = useNavigation<SessionScreenNavigationProp>();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
       <Text style={styles.subHeader}>
         Choose how you want to journal for today.
       </Text>
@@ -97,16 +97,19 @@ const SessionScreen = () => {
           </Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flex: 1,
     backgroundColor: "#fcfaf0",
+  },
+  container: {
     alignItems: "center",
     paddingHorizontal: 20,
+    paddingBottom: 20, // Add padding at bottom for better scrolling
   },
   header: {
     fontSize: 16,
