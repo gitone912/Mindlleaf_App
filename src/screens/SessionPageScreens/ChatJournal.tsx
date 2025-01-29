@@ -40,7 +40,8 @@ const ChatJournal = ({ navigation }: any) => {
       const userData = await AsyncStorage.getItem('userData');
       const { name } = userData ? JSON.parse(userData) : { name: 'User' };
 
-      const history = messages.map(m => `${m.sender === 'user' ? 'User: ' : 'bot: '}${m.text}`);
+      // Modified to remove 'bot:' prefix
+      const history = messages.map(m => `${m.sender === 'user' ? 'User: ' : ''}${m.text}`);
       const { response } = await journalApi.sendMessage(inputText, name, history);
 
       setMessages(prev => [...prev, { id: Date.now().toString(), text: response, sender: 'bot' }]);
@@ -51,7 +52,8 @@ const ChatJournal = ({ navigation }: any) => {
   };
 
   const endSession = () => {
-    const content = messages.map(m => `${m.sender === 'user' ? 'User: ' : 'bot: '}${m.text}`).join('\n\n');
+    // Modified to remove 'bot:' prefix
+    const content = messages.map(m => `${m.sender === 'user' ? 'User: ' : ''}${m.text}`).join('\n\n');
     dispatch(setCurrentJournal({
       content,
       title: 'Chat Session',
