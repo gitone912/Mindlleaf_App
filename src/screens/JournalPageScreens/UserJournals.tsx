@@ -28,23 +28,16 @@ const UserJournals = () => {
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text>Loading journals...</Text>
+        <Text style={styles.messageText}>Loading journals...</Text>
       </View>
     );
   }
 
-  if (error) {
+  if (error || Object.keys(entries).length === 0) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text>Error: {error}</Text>
-      </View>
-    );
-  }
-
-  if (Object.keys(entries).length === 0) {
-    return (
-      <View style={[styles.container, styles.centerContent]}>
-        <Text>No journals found</Text>
+        <Text style={styles.messageText}>No journals found</Text>
+        <Text style={styles.subMessageText}>Start journaling to see your records here</Text>
       </View>
     );
   }
@@ -133,6 +126,18 @@ const styles = StyleSheet.create({
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  messageText: {
+    fontSize: 18,
+    fontFamily: "Inter-Medium",
+    color: "#000",
+    marginBottom: 8,
+  },
+  subMessageText: {
+    fontSize: 14,
+    fontFamily: "Inter-Regular",
+    color: "#807d7d",
+    textAlign: 'center',
   },
 });
 

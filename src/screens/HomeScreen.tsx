@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define screen types
 type RootStackParamList = {
@@ -32,6 +33,23 @@ type Action = {
 
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [userName, setUserName] = useState<string>('');
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUserName(parsedData.name);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserName();
+  }, []);
 
   const actions: Action[] = [
     { id: '1', title: 'Actions', image: require('../assets/actions.png'), screen: 'Action' },
@@ -42,9 +60,9 @@ const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.greeting}>
-        <Text style={styles.day}>Day 44</Text>
-        <Text style={styles.title}>Hi, Ace</Text>
-        <Text style={styles.subtitle}>These days you feel anxious.</Text>
+        {/* <Text style={styles.day}>Day 44</Text> */}
+        <Text style={styles.title}>Hi, {userName}</Text>
+        <Text style={styles.subtitle}>Want to Journal Today?.</Text>
       </View>
       <View style={styles.actionsContainer}>
         {actions.map((action) => (

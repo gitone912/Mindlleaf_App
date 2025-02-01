@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Image, StyleSheet, SafeAreaView, Keyboard } from 'react-native';
 import HomeScreen from '../screens/HomeScreen';
 import JourneyScreen from '../screens/JourneyScreen';
-import SessionScreen from '../screens/SessionScreen';
+import SessionScreen from '../screens/SessionScreenLock';
 import JournalScreen from '../screens/JournalScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ActionScreen from '../screens/HomePageScreens/Actions';

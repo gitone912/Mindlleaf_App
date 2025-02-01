@@ -15,15 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "496351300999-umibc3q6tj7e0n8sl7kl7867i4pao793.apps.googleusercontent.com",
+          "client_id": "496351300999-mhsp0d8ihj86a3e3o5n1nlfj5476015f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mindlleaf_app",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "certificate_hash": "b271b37e52635bfa1024b859d556d009cf79f0d7"
           }
         },
         {
-          "client_id": "496351300999-t8rarl4c62r991ov4mu79cjo1qvo3cgi.apps.googleusercontent.com",
+          "client_id": "496351300999-k2r1e0s31dm9s7imhobfhlusmdinkcck.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -36,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "496351300999-t8rarl4c62r991ov4mu79cjo1qvo3cgi.apps.googleusercontent.com",
+              "client_id": "496351300999-k2r1e0s31dm9s7imhobfhlusmdinkcck.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

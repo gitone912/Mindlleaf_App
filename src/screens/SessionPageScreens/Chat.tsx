@@ -34,7 +34,7 @@ const Chat = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fcfaf0",
+    backgroundColor: "#FCFAF0",
     alignItems: "center",
     justifyContent: "center",
     padding: 20,

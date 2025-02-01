@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, Pressable, View } from "react-native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type SettingsStackParamList = {
   SettingsMain: undefined;
   AITherapy: undefined;
@@ -13,6 +15,26 @@ type SettingsStackParamList = {
 type SettingsScreenNavigationProp = StackNavigationProp<SettingsStackParamList, 'SettingsMain'>;
 const SettingsScreen = () => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
+  const [userName, setUserName] = useState<string>('');
+  const [userEmail, setUserEmail] = useState<string>('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          const parsedData = JSON.parse(userData);
+          setUserName(parsedData.name);
+          setUserEmail(parsedData.email);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* User Profile Image */}
@@ -30,8 +52,8 @@ const SettingsScreen = () => {
           source={require("../assets/settingsIcons/user.png")}
         />
         <View style={styles.userInfoTextContainer}>
-          <Text style={styles.userName}>Ace</Text>
-          <Text style={styles.userEmail}>ace@mindleaf.app</Text>
+          <Text style={styles.userName}>{userName}</Text>
+          <Text style={styles.userEmail}>{userEmail}</Text>
         </View>
         <Pressable style={styles.editButton}>
           <Image

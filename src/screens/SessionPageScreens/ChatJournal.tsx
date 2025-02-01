@@ -133,7 +133,7 @@ const ChatJournal = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F6F0',
+    backgroundColor: '#FCFAF0',
   },
   header: {
     flexDirection: 'row',
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     borderBottomColor: '#E5E5E5',
-    backgroundColor: '#F7F6F0',
+    backgroundColor: '#FCFAF0',
   },
   headerTitle: {
     fontSize: 20,
@@ -187,9 +187,7 @@ borderWidth: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    backgroundColor: '#FCFAF0'
   },
   input: {
     flex: 1,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { GoogleSignin, type User, statusCodes } from '@react-native-google-signin/google-signin';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { googleSignIn } from "../store/slices/authSlice";
@@ -14,6 +14,8 @@ type GoogleSignInData = {
 const LoginPage = ({ navigation }: any) => {
   const dispatch = useAppDispatch();
   const { user, isNewUser } = useAppSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     GoogleSignin.configure({
@@ -34,11 +36,14 @@ const LoginPage = ({ navigation }: any) => {
   }, [user, isNewUser]);
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
     try {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut(); // Clear existing sessions
       
       const signInResult = await GoogleSignin.signIn();
+      console.log(signInResult)
       const tokens = await GoogleSignin.getTokens();
       
       if (tokens.idToken) {
@@ -47,11 +52,21 @@ const LoginPage = ({ navigation }: any) => {
         throw new Error('No ID token received');
       }
     } catch (error: any) {
+      
       console.log('Google Sign-In Error:', error);
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('User cancelled sign-in');
+        setErrorMessage('Sign-in was cancelled');
+      } else if (error?.code === statusCodes.IN_PROGRESS) {
+        setErrorMessage('Sign-in is already in progress');
+      } else if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        setErrorMessage('Play services are not available');
+      } else {
+        setErrorMessage('Sign-in failed. Please try again.');
       }
       await GoogleSignin.signOut();
+      Alert.alert('Sign-in Failed', errorMessage || 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -72,6 +87,10 @@ const LoginPage = ({ navigation }: any) => {
         </Text>
       </View>
 
+      {errorMessage && (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      )}
+
       {/* Buttons */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -83,13 +102,18 @@ const LoginPage = ({ navigation }: any) => {
        
         <View style={styles.socialButtons}>
           <TouchableOpacity 
-            style={styles.socialButton}
+            style={[styles.socialButton, isLoading && styles.disabledButton]}
             onPress={handleGoogleSignIn}
+            disabled={isLoading}
           >
-            <Image
-              style={styles.socialIcon}
-              source={require("../assets/google-icon.png")} // Update the path to your Google icon
-            />
+            {isLoading ? (
+              <ActivityIndicator color="#474d41" />
+            ) : (
+              <Image
+                style={styles.socialIcon}
+                source={require("../assets/google-icon.png")} // Update the path to your Google icon
+              />
+            )}
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
             <Image
@@ -213,6 +237,17 @@ const styles = StyleSheet.create({
   linkText: {
     textDecorationLine: "underline",
     color: "#1a1c29",
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  errorText: {
+    color: '#ff3b30',
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 8,
   },
 });
 

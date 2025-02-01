@@ -92,17 +92,29 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('my-release-key.keystore')
+            storePassword 'Akash9122'
+            keyAlias 'my-key-alias'
+            keyPassword 'Akash9122'
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
+        // release {
+        //     // Caution! In production, you need to generate your own keystore file.
+        //     // see https://reactnative.dev/docs/signed-apk-android.
+        //     signingConfig signingConfigs.debug
+        //     minifyEnabled enableProguardInReleaseBuilds
+        //     proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        // }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
