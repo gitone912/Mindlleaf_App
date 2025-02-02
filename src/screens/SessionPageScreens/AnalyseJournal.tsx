@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useEffect } from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable, Alert } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Pressable, Alert, TextInput } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { compileJournal, getJournalSummary, getSatisfactionScore, getKeywords, getRecommendedActions, getJournalTitle } from '../../store/slices/analyseSlice';
@@ -18,12 +18,18 @@ const AnalyseJournal: React.FC = () => {
   const currentJournal = useSelector((state: RootState) => state.journal.currentJournal);
   const { compiledJournal, summary, satisfactionScore, keywords, loading, isAnalyzing, actions, error, title } = useSelector((state: RootState) => state.analyse);
 
+  // Add new state for edited journal
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedJournal, setEditedJournal] = useState('');
+
   useEffect(() => {
     if (currentJournal?.content) {
       console.log('Dispatching compile journal...');
       dispatch(compileJournal(currentJournal.content))
         .then((result) => {
           if (result.payload) {
+            // Set the initial edited journal value
+            setEditedJournal(result.payload);
             console.log('Journal compiled, dispatching other actions...');
             // First get the summary
             dispatch(getJournalSummary(result.payload))
@@ -103,6 +109,10 @@ const AnalyseJournal: React.FC = () => {
     }
   };
 
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
   const handleCompleteSession = async () => {
     try {
       const userDataString = await AsyncStorage.getItem('userData');
@@ -125,21 +135,27 @@ const AnalyseJournal: React.FC = () => {
             onPress: async () => {
               try {
                 const keywordsArray = keywords ? keywords.split(',').map(k => k.trim()) : [];
-                // Convert actions to proper format
                 const actionsArray = actions?.recommendedActions 
                   ? actions.recommendedActions.split(',').map(a => a.trim()) 
                   : [];
 
+                // Always use editedJournal if it exists, otherwise fall back to compiledJournal
+                const finalContent = editedJournal || compiledJournal;
+                
+                console.log('Saving journal with content:', finalContent); // Debug log
+
                 const journalData = {
                   userId: userData.user_id,
-                  type: title || 'Untitled Journal', // Use title instead of 'personal'
+                  type: title || 'Untitled Journal',
                   originalContent: currentJournal?.content || '',
-                  content: compiledJournal || '',
+                  content: finalContent,
                   moodEmoji: getEmoji(satisfactionScore),
                   moodKeywords: keywordsArray,
                   summary: summary || '',
-                  actions: actionsArray, // Now this is a string array
+                  actions: actionsArray,
                 };
+
+                console.log('Journal data being sent:', journalData); // Debug log
 
                 // Save journal entry
                 const response = await analyseApi.createJournal(journalData);
@@ -157,7 +173,7 @@ const AnalyseJournal: React.FC = () => {
                   }
                 ]);
               } catch (error: any) {
-                console.error('Error:', error);
+                console.error('Error saving journal:', error); // Debug log
                 Alert.alert(
                   'Error',
                   error.message || 'Failed to save journal entry. Please try again.'
@@ -225,9 +241,26 @@ const AnalyseJournal: React.FC = () => {
             ) : null}
           </View>
 
-          <Text style={styles.body}>
-            {compiledJournal || currentJournal?.content || 'No content available'}
-          </Text>
+          {!loading.compile && compiledJournal && (
+            <Pressable style={styles.editButton} onPress={handleEditToggle}>
+              <Text style={styles.editButtonText}>
+                {isEditing ? 'Done Editing' : 'Edit Journal'}
+              </Text>
+            </Pressable>
+          )}
+
+          {isEditing ? (
+            <TextInput
+              style={[styles.body, styles.editInput]}
+              multiline
+              value={editedJournal}
+              onChangeText={setEditedJournal}
+            />
+          ) : (
+            <Text style={styles.body}>
+              {editedJournal || compiledJournal || currentJournal?.content || 'No content available'}
+            </Text>
+          )}
         </View>
 
         {/* Only show these sections after compilation is complete */}
@@ -477,6 +510,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     marginTop: 10,
+  },
+  editButton: {
+    alignSelf: 'flex-end',
+    padding: 8,
+    marginBottom: 10,
+  },
+  editButtonText: {
+    color: '#474d41',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+  },
+  editInput: {
+    minHeight: 200,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
   },
 });
 
