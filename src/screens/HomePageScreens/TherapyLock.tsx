@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Ovo',
     color: '#777',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 10
   },
   comingSoonSubtext: {
     fontSize: 16,

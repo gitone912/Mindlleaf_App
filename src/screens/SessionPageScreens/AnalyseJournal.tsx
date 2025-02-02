@@ -515,9 +515,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     padding: 8,
     marginBottom: 10,
+    backgroundColor: "#474d41",
+    borderRadius: 7,
   },
   editButtonText: {
-    color: '#474d41',
+    color: "#fff",
     fontSize: 14,
     fontFamily: 'Inter-Medium',
   },

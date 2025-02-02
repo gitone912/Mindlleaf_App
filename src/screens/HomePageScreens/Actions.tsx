@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Modal } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch, RootState } from '../../store';
@@ -18,6 +18,8 @@ const ActionScreen = () => {
   const { tasks, loading, error } = useSelector((state: RootState) => state.tasks);
   const [userId, setUserId] = React.useState<string | null>(null);
   const [timeUntilReset, setTimeUntilReset] = React.useState<string>('');
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [selectedTask, setSelectedTask] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     getUserData();
@@ -58,6 +60,19 @@ const ActionScreen = () => {
       fetchTasks(); // Refresh tasks after updating
     } catch (error) {
       console.error('Error completing task:', error);
+    }
+  };
+
+  const handleTaskPress = (taskId: string) => {
+    setSelectedTask(taskId);
+    setModalVisible(true);
+  };
+
+  const confirmTaskCompletion = async () => {
+    if (selectedTask) {
+      await handleTaskCompletion(selectedTask);
+      setModalVisible(false);
+      setSelectedTask(null);
     }
   };
 
@@ -107,7 +122,7 @@ const ActionScreen = () => {
       </View>
       <TouchableOpacity 
         style={styles.tickBox}
-        onPress={() => !item.is_completed && handleTaskCompletion(item.task_id)}
+        onPress={() => !item.is_completed && handleTaskPress(item.task_id)}
       >
         <Image
           style={styles.actionIcon}
@@ -153,6 +168,33 @@ const ActionScreen = () => {
         contentContainerStyle={styles.actionsList}
         showsVerticalScrollIndicator={false}
       />
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Are you sure you want to mark this task as complete?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]} 
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.confirmButton]} 
+                onPress={confirmTaskCompletion}
+              >
+                <Text style={[styles.modalButtonText, styles.confirmButtonText]}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -278,6 +320,51 @@ display: "flex",
     textAlign: "center",
     fontFamily: "Inter-Regular",
     paddingHorizontal: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontFamily: 'Inter-Regular',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+    marginRight: 10,
+  },
+  confirmButton: {
+    backgroundColor: '#41ad49',
+  },
+  modalButtonText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+  },
+  confirmButtonText: {
+    color: 'white',
   },
 });
 
