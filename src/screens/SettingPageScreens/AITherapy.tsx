@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, Pressable, View, Modal } from "react-native";
+import { StyleSheet, Text, Pressable, View, Modal, ActivityIndicator } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateSettings } from '../../api/settingsApi';
 
@@ -8,6 +8,7 @@ const AITherapy = () => {
   const [showModal, setShowModal] = React.useState(false);
   const [tempTherapy, setTempTherapy] = React.useState('');
   const [userId, setUserId] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     loadUserDataAndSettings();
@@ -45,6 +46,7 @@ const AITherapy = () => {
   };
 
   const handleConfirm = async () => {
+    setIsLoading(true);
     try {
       const currentSettings = await AsyncStorage.getItem('userSettings');
       const parsedSettings = currentSettings ? JSON.parse(currentSettings) : {
@@ -69,6 +71,8 @@ const AITherapy = () => {
       setShowModal(false);
     } catch (error) {
       console.error('Error updating therapy type:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,8 +98,13 @@ const AITherapy = () => {
             <Pressable 
               style={[styles.modalButton, styles.confirmButton]} 
               onPress={handleConfirm}
+              disabled={isLoading}
             >
-              <Text style={styles.modalButtonText}>Confirm</Text>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.modalButtonText}>Confirm</Text>
+              )}
             </Pressable>
           </View>
         </View>

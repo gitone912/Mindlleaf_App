@@ -166,6 +166,10 @@ const AnalyseJournal: React.FC = () => {
                 const journeyResponse = await analyseApi.updateJourneyStreak(userData.user_id, utcOffset);
                 console.log('Journey streak updated:', journeyResponse);
 
+                // Save the current timestamp in user's local timezone
+                const now = new Date();
+                await AsyncStorage.setItem('lastJournalTimestamp', now.toISOString());
+
                 Alert.alert('Success', 'Journal entry saved successfully!', [
                   {
                     text: 'OK',
@@ -173,7 +177,7 @@ const AnalyseJournal: React.FC = () => {
                   }
                 ]);
               } catch (error: any) {
-                console.error('Error saving journal:', error); // Debug log
+                console.error('Error saving journal:', error);
                 Alert.alert(
                   'Error',
                   error.message || 'Failed to save journal entry. Please try again.'
