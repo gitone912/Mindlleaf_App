@@ -296,27 +296,31 @@ const AnalyseJournal: React.FC = () => {
             )}
 
             {/* Actions Section */}
-            {loading.actions ? (
-              <LoadingAnimation message="Loading recommended actions..." />
-            ) : error ? (
-              <Text style={styles.errorText}>{error}</Text>
-            ) : actions?.recommendedActions ? (
-              getActionsList().map((action, index) => (
-                <View key={index} style={styles.actionRow}>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.actionText}>{action}</Text>
-                  </View>
-                  <TouchableOpacity 
-                    style={styles.addButton} 
-                    onPress={() => handleAddTask(action)}
-                  >
-                    <Text style={styles.addButtonText}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.noActionsText}>No actions available</Text>
-            )}
+{loading.actions ? (
+  <LoadingAnimation message="Loading recommended actions..." />
+) : error ? (
+  <Text style={styles.errorText}>{error}</Text>
+) : actions?.recommendedActions ? (
+  <>
+    <Text style={styles.sectionTitle}>Choose actions to add to your list</Text>
+    {getActionsList().map((action, index) => (
+      <View key={index} style={styles.actionRow}>
+        <View style={styles.textContainer}>
+          <Text style={styles.actionText}>{action}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.addButton} 
+          onPress={() => handleAddTask(action)}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    ))}
+  </>
+) : (
+  <Text style={styles.noActionsText}>No actions available</Text>
+)}
+
 
             <Pressable style={styles.button} onPress={handleCompleteSession}>
               <Text style={styles.buttonText}>Complete Session</Text>
