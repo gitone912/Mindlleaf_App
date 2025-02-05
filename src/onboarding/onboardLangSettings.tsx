@@ -124,13 +124,13 @@ const OnboardLanguageSelection = ({ navigation }: any) => {
     <Pressable 
       style={[
         styles.button, 
-        selectedLanguage === language && styles.selectedButton
+        selectedLanguage === language && styles.button
       ]}
       onPress={() => handleLanguageSelect(language)}
     >
       <Text style={[
         styles.buttonText, 
-        selectedLanguage === language && styles.selectedButtonText
+        selectedLanguage === language && styles.buttonText
       ]}>
         {language}
       </Text>

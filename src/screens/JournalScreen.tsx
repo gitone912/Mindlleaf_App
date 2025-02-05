@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Image, Pressable } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type JournalStackParamList = {
   JournalMain: undefined;
@@ -12,8 +13,41 @@ type JournalScreenNavigationProp = StackNavigationProp<JournalStackParamList, 'J
 
 const JournalScreen = () => {
   const navigation = useNavigation<JournalScreenNavigationProp>();
+  const [coverImage, setCoverImage] = React.useState(4); // Default to 4
+
+  React.useEffect(() => {
+    const loadCoverChoice = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          const { cover_choice } = JSON.parse(userData);
+          if ([1, 2, 3, 4].includes(Number(cover_choice))) {
+            setCoverImage(Number(cover_choice));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading cover choice:', error);
+      }
+    };
+
+    loadCoverChoice();
+  }, []);
 
   const Image1 = () => {
+    const getImageSource = () => {
+      switch (coverImage) {
+        case 1:
+          return require('../assets/journalCovers/1.png');
+        case 2:
+          return require('../assets/journalCovers/2.png');
+        case 3:
+          return require('../assets/journalCovers/3.png');
+        case 4:
+        default:
+          return require('../assets/journalCovers/4.png');
+      }
+    };
+
     return (
       <Pressable
         style={styles.pressable}
@@ -22,7 +56,7 @@ const JournalScreen = () => {
         <Image
           style={styles.icon}
           resizeMode="cover"
-          source={require('../assets/journalCovers/4.png')}
+          source={getImageSource()}
         />
       </Pressable>
     );
