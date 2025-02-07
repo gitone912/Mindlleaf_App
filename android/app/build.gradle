@@ -93,7 +93,7 @@ android {
             keyPassword 'android'
         }
         create("release") {
-            storeFile = file(rootProject.file("my-release-key.jks"))
+            storeFile = file(rootProject.file("app/my-release-key.jks"))
             storePassword = System.getenv("MYAPP_UPLOAD_STORE_PASSWORD") ?: "Akash9122"
             keyAlias = System.getenv("MYAPP_UPLOAD_KEY_ALIAS") ?: "my-key-alias"
             keyPassword = System.getenv("MYAPP_UPLOAD_KEY_PASSWORD") ?: "Akash9122"
