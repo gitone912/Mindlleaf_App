@@ -13,6 +13,10 @@ const GratitudeJournal = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const dispatch = useDispatch();
 
+  React.useEffect(() => {
+    startSession();
+  }, []);
+
   const startSession = async () => {
     setIsLoading(true);
     try {
@@ -41,14 +45,14 @@ const GratitudeJournal = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable 
-          style={[styles.sessionButton, isSessionActive ? styles.stopButton : styles.startButton]}
-          onPress={isSessionActive ? endSession : startSession}
+          style={[styles.sessionButton, styles.stopButton]}
+          onPress={endSession}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.buttonText}>{isSessionActive ? 'End Session' : 'Start'}</Text>
+            <Text style={styles.buttonText}>End Session</Text>
           )}
         </Pressable>
       </View>

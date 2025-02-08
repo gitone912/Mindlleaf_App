@@ -13,6 +13,11 @@ const PromptJournal = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const dispatch = useDispatch();
 
+  // Add useEffect to start session automatically
+  React.useEffect(() => {
+    startSession();
+  }, []);
+
   const startSession = async () => {
     setIsLoading(true);
     try {
@@ -41,14 +46,14 @@ const PromptJournal = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Pressable 
-          style={[styles.sessionButton, isSessionActive ? styles.stopButton : styles.startButton]}
-          onPress={isSessionActive ? endSession : startSession}
+          style={[styles.sessionButton, styles.stopButton]}
+          onPress={endSession}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.buttonText}>{isSessionActive ? 'End Session' : 'Start'}</Text>
+            <Text style={styles.buttonText}>End Session</Text>
           )}
         </Pressable>
       </View>

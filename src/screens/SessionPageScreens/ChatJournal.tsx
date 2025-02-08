@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,10 @@ const ChatJournal = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGreetingLoading, setIsGreetingLoading] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    startSession();
+  }, []);
 
   const startSession = async () => {
     setIsGreetingLoading(true);
@@ -75,22 +79,19 @@ const ChatJournal = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-
         <TouchableOpacity 
           style={[
             styles.sessionButton,
-            isSessionActive ? styles.stopButton : styles.startButton,
+            styles.stopButton,
             isGreetingLoading && styles.loadingButton
           ]}
-          onPress={isSessionActive ? endSession : startSession}
+          onPress={endSession}
           disabled={isGreetingLoading}
         >
           {isGreetingLoading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.sessionButtonText}>
-              {isSessionActive ? 'End Session' : 'Start'}
-            </Text>
+            <Text style={styles.sessionButtonText}>End Session</Text>
           )}
         </TouchableOpacity>
       </View>
