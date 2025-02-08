@@ -228,6 +228,13 @@ const AnalyseJournal: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+      {!loading.compile && compiledJournal && (
+            <Pressable style={styles.editButton} onPress={handleEditToggle}>
+              <Text style={styles.editButtonText}>
+                {isEditing ? 'Done Editing' : 'Edit Journal'}
+              </Text>
+            </Pressable>
+          )}
         <View style={styles.card}>
           <Text style={styles.date}>
             {new Date(currentJournal?.date || Date.now()).toLocaleDateString('en-US', { 
@@ -245,13 +252,7 @@ const AnalyseJournal: React.FC = () => {
             ) : null}
           </View>
 
-          {!loading.compile && compiledJournal && (
-            <Pressable style={styles.editButton} onPress={handleEditToggle}>
-              <Text style={styles.editButtonText}>
-                {isEditing ? 'Done Editing' : 'Edit Journal'}
-              </Text>
-            </Pressable>
-          )}
+          
 
           {isEditing ? (
             <TextInput
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 10,
     fontFamily: 'Inter-Medium',
   },
   editInput: {
