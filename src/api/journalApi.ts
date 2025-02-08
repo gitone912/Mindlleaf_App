@@ -61,3 +61,12 @@ export const getJournalPrompt = async (userId: string) => {
     throw error;
   }
 };
+
+export const deleteJournal = async (journalId: string) => {
+  try {
+    const response = await axios.delete(`${BASE_URL_AUTH}/v1/journal/delete/${journalId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

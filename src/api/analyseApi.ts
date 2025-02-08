@@ -103,3 +103,12 @@ export const updateJourneyStreak = async (userId: string, utcOffset: number) => 
     throw new Error(error.response?.data?.message || 'Failed to update journey streak');
   }
 };
+
+export const deleteJournal = async (journalId: string) => {
+  try {
+    const response = await axios.delete(`${BASE_URL_AUTH}/v1/journal/delete/${journalId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

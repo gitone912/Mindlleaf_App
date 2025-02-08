@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Alert, Image } from "react-native";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { fetchJournals } from "../../store/slices/editGetJournalSlice";
+import { deleteJournalEntry } from "../../store/slices/journalSlice";
+import { Swipeable } from 'react-native-gesture-handler';
 
 type JournalStackParamList = {
   JournalMain: undefined;
@@ -24,6 +26,45 @@ const UserJournals = () => {
       dispatch(fetchJournals());
     }, [dispatch])
   );
+
+  const handleDelete = (journalId: string) => {
+    Alert.alert(
+      'Delete Journal',
+      'Are you sure you want to delete this journal entry?',
+      [
+        { text: 'No', style: 'cancel' },
+        { 
+          text: 'Yes',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const result = await dispatch(deleteJournalEntry(journalId)).unwrap();
+              dispatch(fetchJournals()); // Refresh the list after successful deletion
+            } catch (error) {
+              Alert.alert(
+                'Error',
+                'Failed to delete journal entry. Please try again.'
+              );
+            }
+          }
+        },
+      ]
+    );
+  };
+
+  const renderRightActions = (journalId: string) => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(journalId)}
+      >
+        <Image 
+          source={require('../../assets/delete.png')} 
+          style={styles.deleteIcon}
+        />
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -47,24 +88,28 @@ const UserJournals = () => {
       {Object.entries(entries)
         .sort((a, b) => new Date(b[1].updated_at).getTime() - new Date(a[1].updated_at).getTime())
         .map(([journalId, entry]) => (
-          <TouchableOpacity 
-            key={journalId} 
-            style={styles.entryContainer} 
-            onPress={() => navigation.navigate('ReadJournal', { journalId })}
+          <Swipeable
+            key={journalId}
+            renderRightActions={() => renderRightActions(journalId)}
           >
-            <View style={styles.dateContainer}>
-              <Text style={styles.date}>
-                {new Date(entry.updated_at).getDate()}
-              </Text>
-              <Text style={styles.month}>
-                {new Date(entry.updated_at).toLocaleString('default', { month: 'short' })}
-              </Text>
-            </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{entry.type}</Text>
-              <Text style={styles.description}>{entry.content.substring(0, 100)}...</Text>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.entryContainer} 
+              onPress={() => navigation.navigate('ReadJournal', { journalId })}
+            >
+              <View style={styles.dateContainer}>
+                <Text style={styles.date}>
+                  {new Date(entry.updated_at).getDate()}
+                </Text>
+                <Text style={styles.month}>
+                  {new Date(entry.updated_at).toLocaleString('default', { month: 'short' })}
+                </Text>
+              </View>
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{entry.type}</Text>
+                <Text style={styles.description}>{entry.content.substring(0, 100)}...</Text>
+              </View>
+            </TouchableOpacity>
+          </Swipeable>
         ))}
     </ScrollView>
   );
@@ -138,6 +183,18 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     color: "#807d7d",
     textAlign: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#ff4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+  },
+  deleteIcon: {
+    width: 24,
+    height: 24,
+    tintColor: 'white',
   },
 });
 
