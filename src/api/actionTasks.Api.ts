@@ -27,3 +27,8 @@ export const reduceTaskCompletionApi = async (taskId: string) => {
   const response = await axios.patch(`${BASE_URL}/v1/tasks/reduce/${taskId}`, { isCompleted: false });
   return response.data;
 };
+
+export const deleteTaskApi = async (taskId: string) => {
+  const response = await axios.delete(`${BASE_URL}/v1/tasks/delete/${taskId}`);
+  return response.data;
+};

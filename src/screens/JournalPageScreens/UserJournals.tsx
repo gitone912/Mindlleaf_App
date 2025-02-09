@@ -66,6 +66,12 @@ const UserJournals = () => {
     );
   };
 
+  const renderInstructions = () => (
+    <Text style={styles.instructionText}>
+      Swipe right on journals to delete them
+    </Text>
+  );
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -85,6 +91,7 @@ const UserJournals = () => {
 
   return (
     <ScrollView style={styles.container}>
+      {renderInstructions()}
       {Object.entries(entries)
         .sort((a, b) => new Date(b[1].updated_at).getTime() - new Date(a[1].updated_at).getTime())
         .map(([journalId, entry]) => (
@@ -195,6 +202,14 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     tintColor: 'white',
+  },
+  instructionText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontStyle: 'italic',
+    fontFamily: 'Inter-Regular',
   },
 });
 

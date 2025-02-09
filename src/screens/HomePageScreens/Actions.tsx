@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Modal, ScrollView } from "react-native";
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Modal, ScrollView, Alert } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch, RootState } from '../../store';
-import { getTodaysTasks, updateTaskCompletion, reduceTaskCompletion } from '../../store/slices/actionSlice';
+import { getTodaysTasks, updateTaskCompletion, reduceTaskCompletion, deleteTask } from '../../store/slices/actionSlice';
 import { fetchUserById } from '../../store/slices/authSlice';
+import { Swipeable } from 'react-native-gesture-handler';
 
 interface UserData {
   user_id: string;
@@ -131,28 +132,74 @@ const ActionScreen = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const renderActionItem = ({ item }: { item: any }) => (
-    <View style={styles.actionRow}>
-      <View style={[styles.actionItem, item.is_completed && styles.highlightedAction]}>
-        <Text style={item.is_completed ? styles.actionTextHighlighted : styles.actionText}>
-          {item.task_name}
-        </Text>
-      </View>
-      <TouchableOpacity 
-        style={styles.tickBox}
-        onPress={() => handleTaskPress(item.task_id, item.is_completed)}
+  const renderRightActions = (taskId: string) => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => handleDeleteTask(taskId)}
       >
-        <Image
-          style={styles.actionIcon}
-          resizeMode="cover"
-          source={
-            item.is_completed
-              ? require("../../assets/tickmark.png")
-              : require("../../assets/tickmarkgrey.png")
-          }
+        <Image 
+          source={require('../../assets/delete.png')} 
+          style={styles.deleteIcon}
         />
       </TouchableOpacity>
-    </View>
+    );
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    Alert.alert(
+      'Delete Task',
+      'Are you sure you want to delete this task?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await dispatch(deleteTask(taskId));
+            } catch (error) {
+              console.error('Error deleting task:', error);
+              Alert.alert('Error', 'Failed to delete task');
+            }
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
+  const renderActionItem = ({ item }: { item: any }) => (
+    <Swipeable
+      enabled={!item.is_completed}
+      renderRightActions={() => 
+        !item.is_completed ? renderRightActions(item.task_id) : null
+      }
+    >
+      <View style={styles.actionRow}>
+        <View style={[styles.actionItem, item.is_completed && styles.highlightedAction]}>
+          <Text style={item.is_completed ? styles.actionTextHighlighted : styles.actionText}>
+            {item.task_name}
+          </Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.tickBox}
+          onPress={() => handleTaskPress(item.task_id, item.is_completed)}
+        >
+          <Image
+            style={styles.actionIcon}
+            resizeMode="cover"
+            source={
+              item.is_completed
+                ? require("../../assets/tickmark.png")
+                : require("../../assets/tickmarkgrey.png")
+            }
+          />
+        </TouchableOpacity>
+      </View>
+    </Swipeable>
   );
 
   const renderSections = () => {
@@ -188,6 +235,12 @@ const ActionScreen = () => {
     );
   };
 
+  const renderInstructions = () => (
+    <Text style={styles.instructionText}>
+      Swipe right on incomplete tasks to delete them
+    </Text>
+  );
+
   if (!userId || loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -211,7 +264,8 @@ const ActionScreen = () => {
       <Text style={styles.subheaderText}>
         Based on your journal entries, here are recommended actions that you need to complete to improve your mental health.
       </Text>
-
+      {renderInstructions()}
+      
       <ScrollView 
         contentContainerStyle={styles.actionsList}
         showsVerticalScrollIndicator={false}
@@ -428,6 +482,32 @@ display: "flex",
     marginBottom: 10,
     marginLeft: 10,
     fontFamily: 'Inter-Regular',
+  },
+  deleteAction: {
+    backgroundColor: '#ff4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+    borderRadius: 7,
+  },
+  deleteActionText: {
+    color: 'white',
+    fontWeight: '600',
+    padding: 20,
+  },
+  instructionText: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontStyle: 'italic',
+    fontFamily: 'Inter-Regular',
+  },
+  deleteIcon: {
+    width: 24,
+    height: 24,
+    tintColor: 'white',
   },
 });
 

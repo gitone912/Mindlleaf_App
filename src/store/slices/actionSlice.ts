@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createTaskApi, updateTaskCompletionApi, getTodaysTasksApi, reduceTaskCompletionApi } from '../../api/actionTasks.Api';
+import { createTaskApi, updateTaskCompletionApi, getTodaysTasksApi, reduceTaskCompletionApi, deleteTaskApi } from '../../api/actionTasks.Api';
 
 interface Task {
   task_id: string;  // Changed from taskId
@@ -55,6 +55,14 @@ export const reduceTaskCompletion = createAsyncThunk(
   }
 );
 
+export const deleteTask = createAsyncThunk(
+  'tasks/deleteTask',
+  async (taskId: string) => {
+    await deleteTaskApi(taskId);
+    return taskId;
+  }
+);
+
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -88,6 +96,9 @@ const taskSlice = createSlice({
           task.is_completed = false;
           task.completed_at = null;
         }
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter(task => task.task_id !== action.payload);
       });
   },
 });
