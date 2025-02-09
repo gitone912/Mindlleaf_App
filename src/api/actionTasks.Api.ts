@@ -22,3 +22,8 @@ export const getTodaysTasksApi = async (userId: string) => {
   const response = await axios.post(`${BASE_URL}/v1/tasks/today-tasks`, { userId });
   return response.data;
 };
+
+export const reduceTaskCompletionApi = async (taskId: string) => {
+  const response = await axios.patch(`${BASE_URL}/v1/tasks/reduce/${taskId}`, { isCompleted: false });
+  return response.data;
+};

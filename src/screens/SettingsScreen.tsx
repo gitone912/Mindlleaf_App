@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, Pressable, View, Modal } from "react-native";
+import { Image, StyleSheet, Text, Pressable, View, Modal, Linking } from "react-native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,10 +41,11 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       {/* User Profile Image */}
       <View style={styles.userProfileImageContainer}>
-        <Image
+        {/* <Image
           style={styles.userProfileImage}
           source={require("../assets/settingsIcons/userprofile.png")}
-        />
+        /> */}
+        <Text style={styles.title}>Settings</Text>
       </View>
 
       {/* User Info Section */}
@@ -82,6 +83,10 @@ const SettingsScreen = () => {
                 navigation.navigate("Voice");
               } else if (option.title === "Subscription") {
                 navigation.navigate("Subscription");
+              } else if (option.title === "Join Discord Community" || 
+                        option.title === "Write a review" || 
+                        option.title === "Contact support") {
+                Linking.openURL('https://discord.gg/ZXegVRduP3');
               }
             }}
           >
@@ -296,6 +301,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
+    textAlign: "center",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
     textAlign: "center",
   },
 });

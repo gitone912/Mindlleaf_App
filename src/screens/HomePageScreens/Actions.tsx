@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndi
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppDispatch, RootState } from '../../store';
-import { getTodaysTasks, updateTaskCompletion } from '../../store/slices/actionSlice';
+import { getTodaysTasks, updateTaskCompletion, reduceTaskCompletion } from '../../store/slices/actionSlice';
 import { fetchUserById } from '../../store/slices/authSlice';
 
 interface UserData {
@@ -20,6 +20,7 @@ const ActionScreen = () => {
   const [timeUntilReset, setTimeUntilReset] = React.useState<string>('');
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState<string | null>(null);
+  const [isUndoModal, setIsUndoModal] = React.useState(false);
 
   React.useEffect(() => {
     getUserData();
@@ -63,14 +64,31 @@ const ActionScreen = () => {
     }
   };
 
-  const handleTaskPress = (taskId: string) => {
+  const handleTaskPress = (taskId: string, isCompleted: boolean) => {
     setSelectedTask(taskId);
+    setIsUndoModal(isCompleted);
     setModalVisible(true);
   };
 
   const confirmTaskCompletion = async () => {
     if (selectedTask) {
       await handleTaskCompletion(selectedTask);
+      setModalVisible(false);
+      setSelectedTask(null);
+    }
+  };
+
+  const handleUndoTaskCompletion = async () => {
+    if (selectedTask) {
+      try {
+        await dispatch(reduceTaskCompletion(selectedTask));
+        if (userId) {
+          await dispatch(fetchUserById(userId)); // Fetch updated user data
+        }
+        fetchTasks(); // Refresh tasks after updating
+      } catch (error) {
+        console.error('Error undoing task:', error);
+      }
       setModalVisible(false);
       setSelectedTask(null);
     }
@@ -122,7 +140,7 @@ const ActionScreen = () => {
       </View>
       <TouchableOpacity 
         style={styles.tickBox}
-        onPress={() => !item.is_completed && handleTaskPress(item.task_id)}
+        onPress={() => handleTaskPress(item.task_id, item.is_completed)}
       >
         <Image
           style={styles.actionIcon}
@@ -209,7 +227,11 @@ const ActionScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Are you sure you want to mark this task as complete?</Text>
+            <Text style={styles.modalText}>
+              {isUndoModal 
+                ? "Do you want to undo this completed task?"
+                : "Are you sure you want to mark this task as complete?"}
+            </Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.cancelButton]} 
@@ -219,7 +241,7 @@ const ActionScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.confirmButton]} 
-                onPress={confirmTaskCompletion}
+                onPress={isUndoModal ? handleUndoTaskCompletion : confirmTaskCompletion}
               >
                 <Text style={[styles.modalButtonText, styles.confirmButtonText]}>Confirm</Text>
               </TouchableOpacity>

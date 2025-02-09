@@ -33,7 +33,7 @@ export const fetchMoodData = createAsyncThunk(
       }));
       return moodWithEmojis;
     } catch (error) {
-      return rejectWithValue('Please complete more journal entries to get mood insights.');
+      return rejectWithValue('Please complete one week of journal entries to get mood insights');
     }
   }
 );

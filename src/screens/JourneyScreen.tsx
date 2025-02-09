@@ -10,6 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const data = [
   {
     id: '1',
+    level: 'Level 1',
     title: 'Reflective Novice',
     subtitle: '3-day Streak',
     icon: '🌱',
@@ -17,31 +18,75 @@ const data = [
   },
   {
     id: '2',
-    title: 'Reflective Novice',
+    level: 'Level 2',
+    title: 'Thoughtful Apprentice',
     subtitle: '7-day Streak',
     icon: '🌿',
     days: 7,
   },
   {
     id: '3',
-    title: 'Reflective Intermediate',
+    level: 'Level 3',
+    title: 'Mindful Explorer',
     subtitle: '10-day Streak',
     icon: '🌳',
     days: 10,
   },
   {
     id: '4',
-    title: 'Reflective Expert',
+    level: 'Level 4',
+    title: 'Insightful Pathfinder',
     subtitle: '30-day Streak',
     icon: '🌲',
     days: 30,
   },
   {
     id: '5',
-    title: 'Reflective Master',
+    level: 'Level 5',
+    title: 'Emotional Champion',
     subtitle: '50-day Streak',
-    icon: '🌟',
+    icon: '🏆',
     days: 50,
+  },
+  {
+    id: '6',
+    level: 'Level 6',
+    title: 'Master of Reflection',
+    subtitle: '90-day Streak',
+    icon: '🔮',
+    days: 90,
+  },
+  {
+    id: '7',
+    level: 'Level 7',
+    title: 'Sage of Self-Awareness',
+    subtitle: '150-day Streak',
+    icon: '🧘‍♂️',
+    days: 150,
+  },
+  {
+    id: '8',
+    level: 'Level 8',
+    title: 'Enlightened Guide',
+    subtitle: '200-day Streak',
+    icon: '🌟',
+    days: 200,
+  },
+  {
+    id: '9',
+    level: 'Level 9',
+    title: 'Transcendent Mentor',
+    subtitle: '250-day Streak',
+    icon: '💠',
+    days: 250,
+  },
+  {
+    id: '10',
+    level: 'Level 10',
+    title: 'Reflection Luminary',
+    subtitle: '365-day Streak',
+    icon: '🌞',
+    days: 365,
   },
 ];
 
@@ -62,7 +107,7 @@ const JourneyScreen = () => {
   const currentDay = streak;
 
   // Render a single box item
-  const renderItem = ({ item }: { item: { id: string; title: string; subtitle: string; icon: string; days: number } }) => {
+  const renderItem = ({ item }: { item: { id: string; level: string; title: string; subtitle: string; icon: string; days: number } }) => {
     const isRunning = currentDay <= item.days && currentDay > (data.find((box) => box.id === (parseInt(item.id) - 1)?.toString())?.days || 0);
     const isCompleted = currentDay > item.days;
     const isActive = currentDay >= item.days;
@@ -76,6 +121,7 @@ const JourneyScreen = () => {
         ]}
       >
         <Text style={[styles.icon, isCompleted ? styles.activeText : styles.defaultText]}>{item.icon}</Text>
+        <Text style={[styles.level, isCompleted ? styles.activeText : styles.defaultText]}>{item.level}</Text>
         <Text style={[styles.title, isCompleted ? styles.activeText : styles.defaultText]}>{item.title}</Text>
         {isRunning ? (
           <DayProgress currentDay={currentDay} totalDays={item.days} />
@@ -92,7 +138,7 @@ const JourneyScreen = () => {
     <View style={styles.container}>
       <Text style={styles.dayText}>Day {currentDay}</Text>
       <Text style={styles.description}>
-        Ace, you are just beginning your reflective journey. By reaching this level, you’ve taken the first step toward self-awareness. Every big journey starts with small, meaningful steps.
+        Ace, you are just beginning your reflective journey. By reaching this level, you've taken the first step toward self-awareness. Every big journey starts with small, meaningful steps.
       </Text>
       <FlatList
         data={data}
@@ -140,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FCFAF0',
     borderRadius: 15,
     width: 220,
-    height: 80,
+    height: 100,
     marginBottom: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -182,6 +228,11 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
     marginTop: 4,
+  },
+  level: {
+    fontSize: 11,
+    marginBottom: 2,
+    fontFamily: 'Inter-Regular',
   },
 });
 

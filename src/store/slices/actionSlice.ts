@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createTaskApi, updateTaskCompletionApi, getTodaysTasksApi } from '../../api/actionTasks.Api';
+import { createTaskApi, updateTaskCompletionApi, getTodaysTasksApi, reduceTaskCompletionApi } from '../../api/actionTasks.Api';
 
 interface Task {
   task_id: string;  // Changed from taskId
@@ -47,6 +47,14 @@ export const getTodaysTasks = createAsyncThunk(
   }
 );
 
+export const reduceTaskCompletion = createAsyncThunk(
+  'tasks/reduceTaskCompletion',
+  async (taskId: string) => {
+    const response = await reduceTaskCompletionApi(taskId);
+    return { taskId, ...response };
+  }
+);
+
 const taskSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -73,6 +81,13 @@ const taskSlice = createSlice({
       })
       .addCase(getTodaysTasks.fulfilled, (state, action) => {
         state.tasks = action.payload;
+      })
+      .addCase(reduceTaskCompletion.fulfilled, (state, action) => {
+        const task = state.tasks.find(t => t.task_id === action.payload.taskId);
+        if (task) {
+          task.is_completed = false;
+          task.completed_at = null;
+        }
       });
   },
 });
