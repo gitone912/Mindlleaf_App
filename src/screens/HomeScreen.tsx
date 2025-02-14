@@ -53,9 +53,9 @@ const HomeScreen = () => {
 
   const actions: Action[] = [
     { id: '1', title: 'Actions', image: require('../assets/actions.png'), screen: 'Action' },
-    { id: '2', title: 'Mind', image: require('../assets/mind.png'), screen: 'Mind' },
+    { id: '2', title: 'Insights', image: require('../assets/mind.png'), screen: 'Mind' },
     { id: '3', title: 'Therapy', image: require('../assets/therapy.png'), screen: 'Therapy' },
-    { id: '4', title: 'Mood', image: require('../assets/mood.png'), screen: 'Mood' },
+    { id: '4', title: 'Report', image: require('../assets/mood.png'), screen: 'Mood' },
   ];
   return (
     <ScrollView style={styles.container}>

@@ -8,7 +8,7 @@ type SettingsStackParamList = {
   SettingsMain: undefined;
   AITherapy: undefined;
   Language : undefined;
-  Voice : undefined;
+  AICharacter : undefined;
   Subscription : undefined;
   Logout: undefined;
 };
@@ -79,8 +79,8 @@ const SettingsScreen = () => {
                 navigation.navigate("AITherapy");
               } else if (option.title === "Language") {
                 navigation.navigate("Language");
-              } else if (option.title === "Voice") {
-                navigation.navigate("Voice");
+              } else if (option.title === "AI Character") {
+                navigation.navigate("AICharacter");
               } else if (option.title === "Subscription") {
                 navigation.navigate("Subscription");
               } else if (option.title === "Join Discord Community" || 
@@ -154,7 +154,7 @@ const menuOptions = [
     icon: require("../assets/settingsIcons/3.png"),
   },
   {
-    title: "Voice",
+    title: "AI Character",
     icon: require("../assets/settingsIcons/4.png"),
   },
   {
@@ -179,11 +179,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fcfaf0",
-    paddingHorizontal: 30, // Increased padding
-    justifyContent: "center", // Centered the list vertically
+    paddingHorizontal: 30,
+    justifyContent: "center",
   },
   userProfileImageContainer: {
-    alignItems: "center", // Center the image horizontally
+    alignItems: "center",
     marginBottom: 20, // Add some spacing below the image
   },
   userProfileImage: {

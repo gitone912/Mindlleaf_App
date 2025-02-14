@@ -84,7 +84,7 @@ const SettingsStack = () => {
       <Stack.Screen name="SettingsMain" component={SettingsScreen} />
       <Stack.Screen name="AITherapy" component={AITherapy} />
       <Stack.Screen name="Language" component={LanguageSelection} />
-      <Stack.Screen name="Voice" component={VoiceSelection} />
+      <Stack.Screen name="AICharacter" component={VoiceSelection} />
       <Stack.Screen name="Subscription" component={Subscription} />
     </Stack.Navigator>
   );
