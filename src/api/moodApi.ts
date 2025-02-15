@@ -22,3 +22,21 @@ export const getMoodData = async () => {
     throw error;
   }
 };
+
+export interface FrequentWordsData {
+  frequent_words: [string, string][];
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
+
+export const getFrequentWords = async (userId: string) => {
+  try {
+    const url = `${BASE_URL_AUTH}/v1/frequent-words/${userId}`;
+    const response = await axios.get<FrequentWordsData>(url);
+    return response.data;
+  } catch (error: any) {
+    console.error('Frequent Words API Error:', error.message);
+    throw error;
+  }
+};

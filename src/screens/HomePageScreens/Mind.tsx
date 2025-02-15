@@ -3,10 +3,11 @@ import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getMindData } from "../../store/slices/mindSlice";
 import { MindData } from "../../api/mindTaskApi";
 import MoodGraphComponent from "./mood_graph_component";
+import { fetchFrequentWords } from "../../store/slices/moodSlice";
 
 type RootStackParamList = {
   Therapy: undefined;
@@ -19,6 +20,9 @@ const MindScreen = () => {
   const navigation = useNavigation<MindScreenNavigationProp>();
   const dispatch = useAppDispatch();
   const [latestMind, setLatestMind] = useState<MindData | null>(null);
+  const { frequentWords, frequentWordsLoading, frequentWordsError } = useAppSelector(
+    (state) => state.mood
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +30,7 @@ const MindScreen = () => {
         const userData = await AsyncStorage.getItem("userData");
         if (userData) {
           const { user_id } = JSON.parse(userData);
+          dispatch(fetchFrequentWords(user_id));
           const result = await dispatch(getMindData(user_id)).unwrap();
 
           const entries = Object.values(result) as MindData[];
@@ -37,12 +42,34 @@ const MindScreen = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching mind data:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, [dispatch]);
+
+  const renderFrequentWords = () => {
+    if (frequentWordsLoading) {
+      return <Text>Loading...</Text>;
+    }
+
+    if (frequentWordsError || !frequentWords || frequentWords.length === 0) {
+      return (
+        <View style={styles.wordBox}>
+          <Text style={styles.word}>No Data Available</Text>
+          <Text style={styles.wordCount}>Complete journals to generate insights</Text>
+        </View>
+      );
+    }
+
+    return frequentWords.map(([word, count], index) => (
+      <View key={index} style={styles.wordBox}>
+        <Text style={styles.word}>{word}</Text>
+        <Text style={styles.wordCount}>Mentioned in {count} journals</Text>
+      </View>
+    ));
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -54,30 +81,17 @@ const MindScreen = () => {
 
       {/* Status Card */}
       <View style={styles.statusCard}>
-        <Text style={styles.statusText}>{latestMind?.title || "Anxious"}</Text>
+        <Text style={styles.statusText}>{latestMind?.title || "Mood Summary"}</Text>
         <Text style={styles.statusDescription}>
           {latestMind?.insight ||
-            "Your recent journal entries suggest anxiety stemming from specific concerns about upcoming deadlines at work, uncertainty about a personal relationship, and a repeated focus on health-related worries."}
+            "Please complete one week of journal entries to get mood Summary"}
         </Text>
       </View>
-
-     
 
       {/* Frequent Words Section */}
       <View style={styles.wordsContainer}>
         <Text style={styles.wordsTitle}>Frequent Words</Text>
-        <View style={styles.wordBox}>
-          <Text style={styles.word}>Alone</Text>
-          <Text style={styles.wordCount}>Mentioned in 10 journals</Text>
-        </View>
-        <View style={styles.wordBox}>
-          <Text style={styles.word}>Overwhelmed</Text>
-          <Text style={styles.wordCount}>Mentioned in 5 journals</Text>
-        </View>
-        <View style={styles.wordBox}>
-          <Text style={styles.word}>Work</Text>
-          <Text style={styles.wordCount}>Mentioned in 2 journals</Text>
-        </View>
+        {renderFrequentWords()}
       </View>
 
        {/* Mood Graph Component */}

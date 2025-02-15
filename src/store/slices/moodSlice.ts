@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getMoodData } from '../../api/moodApi';
+import { getMoodData, getFrequentWords, FrequentWordsData } from '../../api/moodApi';
 
 interface MoodData {
   day: string;
@@ -11,6 +11,9 @@ interface MoodState {
   moodData: MoodData[];
   loading: boolean;
   error: string | null;
+  frequentWords: [string, string][] | null;
+  frequentWordsLoading: boolean;
+  frequentWordsError: string | null;
 }
 
 const getMoodEmoji = (value: number): string => {
@@ -38,10 +41,25 @@ export const fetchMoodData = createAsyncThunk(
   }
 );
 
+export const fetchFrequentWords = createAsyncThunk(
+  'mood/fetchFrequentWords',
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await getFrequentWords(userId);
+      return response.frequent_words;
+    } catch (error) {
+      return rejectWithValue('No journal data available yet');
+    }
+  }
+);
+
 const initialState: MoodState = {
   moodData: [],
   loading: false,
-  error: null
+  error: null,
+  frequentWords: null,
+  frequentWordsLoading: false,
+  frequentWordsError: null
 };
 
 const moodSlice = createSlice({
@@ -61,6 +79,18 @@ const moodSlice = createSlice({
       .addCase(fetchMoodData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchFrequentWords.pending, (state) => {
+        state.frequentWordsLoading = true;
+        state.frequentWordsError = null;
+      })
+      .addCase(fetchFrequentWords.fulfilled, (state, action) => {
+        state.frequentWordsLoading = false;
+        state.frequentWords = action.payload;
+      })
+      .addCase(fetchFrequentWords.rejected, (state, action) => {
+        state.frequentWordsLoading = false;
+        state.frequentWordsError = action.payload as string;
       });
   }
 });
