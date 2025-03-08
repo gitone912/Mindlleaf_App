@@ -53,7 +53,7 @@ const MindScreen = () => {
     if (frequentWordsLoading) {
       return <Text>Loading...</Text>;
     }
-
+  
     if (frequentWordsError || !frequentWords || frequentWords.length === 0) {
       return (
         <View style={styles.wordBox}>
@@ -62,14 +62,23 @@ const MindScreen = () => {
         </View>
       );
     }
-
-    return frequentWords.map(([word, count], index) => (
+  
+    // Filter out empty words before rendering
+    const filteredWords = frequentWords.filter(([word]) => word.trim() !== "");
+  
+    // If no valid words remain, don't show anything
+    if (filteredWords.length === 0) {
+      return null;
+    }
+  
+    return filteredWords.map(([word, count], index) => (
       <View key={index} style={styles.wordBox}>
         <Text style={styles.word}>{word}</Text>
         <Text style={styles.wordCount}>Mentioned in {count} journals</Text>
       </View>
     ));
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -90,7 +99,7 @@ const MindScreen = () => {
 
       {/* Frequent Words Section */}
       <View style={styles.wordsContainer}>
-        <Text style={styles.wordsTitle}>Frequent Words</Text>
+        <Text style={styles.wordsTitle}>Frequent Issues</Text>
         {renderFrequentWords()}
       </View>
 
@@ -164,6 +173,8 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     color: "#000",
     marginBottom: 10,
+    alignItems:"center",
+    textAlign: "center",
   },
   wordBox: {
     backgroundColor: "#f7f6eb",
@@ -216,6 +227,8 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     color: "#000",
     marginBottom: 10,
+    alignItems:"center",
+    textAlign: "center", // Center the text
   },
 });
 

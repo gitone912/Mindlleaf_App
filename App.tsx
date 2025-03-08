@@ -19,12 +19,10 @@ import store from "./src/store";
 import OldUserLanding from './src/navigation/OldUserLanding';
 import OnboardLanguageSelection from './src/onboarding/onboardLangSettings';
 import Logout from './src/screens/Logout';
-
 const Stack = createStackNavigator();
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
-
   useEffect(() => {
     const checkUserData = async () => {
       try {
