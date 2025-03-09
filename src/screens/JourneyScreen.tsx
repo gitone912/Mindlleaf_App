@@ -1,10 +1,11 @@
 // Importing necessary libraries
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getStreak } from '../store/slices/journeySlice';
 import { AppDispatch, RootState } from '../store';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // JSON data for the boxes
 const data = [
@@ -97,10 +98,24 @@ const DayProgress = ({ currentDay, totalDays }: { currentDay: number; totalDays:
 const JourneyScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { streak } = useSelector((state: RootState) => state.journey);
+  const [userName, setUserName] = useState('');
+
+  const getUserName = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        const { name } = JSON.parse(userData);
+        setUserName(name || '');
+      }
+    } catch (error) {
+      console.error('Error fetching user name:', error);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(getStreak());
+      getUserName();
     }, [dispatch])
   );
 
@@ -138,7 +153,7 @@ const JourneyScreen = () => {
     <View style={styles.container}>
       <Text style={styles.dayText}>Day {currentDay}</Text>
       <Text style={styles.description}>
-        Ace, you are just beginning your reflective journey. By reaching this level, you've taken the first step toward self-awareness. Every big journey starts with small, meaningful steps.
+        {userName}, you are just beginning your reflective journey. By reaching this level, you've taken the first step toward self-awareness. Every big journey starts with small, meaningful steps.
       </Text>
       <FlatList
         data={data}
