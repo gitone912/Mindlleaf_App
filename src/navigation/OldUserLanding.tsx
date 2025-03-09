@@ -35,7 +35,7 @@ const OldUserLanding = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('../assets/logo_new.png')}
+        source={require('../assets/logo_mindleaf_full.png')}
         style={[styles.image, { opacity: fadeAnim }]}
       />
     </View>
