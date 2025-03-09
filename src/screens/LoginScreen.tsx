@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { Text, StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, Alert, Platform } from "react-native";
 import { GoogleSignin, type User, statusCodes } from '@react-native-google-signin/google-signin';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { googleSignIn } from "../store/slices/authSlice";
@@ -94,28 +94,48 @@ const LoginPage = ({ navigation }: any) => {
           <Text style={styles.emailButtonText}>Continue with Email</Text>
         </TouchableOpacity>
        
-        <View style={styles.socialButtons}>
+        {Platform.OS === 'android' ? (
           <TouchableOpacity 
-            style={[styles.socialButton, isLoading && styles.disabledButton]}
+            style={[styles.googleButton, isLoading && styles.disabledButton]}
             onPress={handleGoogleSignIn}
             disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#474d41" />
             ) : (
-              <Image
-                style={styles.socialIcon}
-                source={require("../assets/google-icon.png")} // Update the path to your Google icon
-              />
+              <View style={styles.googleButtonContent}>
+                <Image
+                  style={styles.socialIcon}
+                  source={require("../assets/google-icon.png")}
+                />
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              </View>
             )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Image
-              style={styles.socialIcon}
-              source={require("../assets/apple-icon.png")} // Update the path to your Apple icon
-            />
-          </TouchableOpacity>
-        </View>
+        ) : (
+          <View style={styles.socialButtons}>
+            <TouchableOpacity 
+              style={[styles.socialButton, isLoading && styles.disabledButton]}
+              onPress={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#474d41" />
+              ) : (
+                <Image
+                  style={styles.socialIcon}
+                  source={require("../assets/google-icon.png")}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.socialButton}>
+              <Image
+                style={styles.socialIcon}
+                source={require("../assets/apple-icon.png")}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Footer */}
@@ -242,6 +262,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 8,
+  },
+  googleButton: {
+    backgroundColor: "#ffffff",
+    height: 54,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#d7d7d7",
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleButtonText: {
+    color: "#1a1c29",
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "SF Pro",
+    marginLeft: 12,
   },
 });
 

@@ -19,10 +19,47 @@ import store from "./src/store";
 import OldUserLanding from './src/navigation/OldUserLanding';
 import OnboardLanguageSelection from './src/onboarding/onboardLangSettings';
 import Logout from './src/screens/Logout';
+import {PermissionsAndroid, Alert, Platform} from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 const Stack = createStackNavigator();
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    const getTheToken = async () => {
+      if (Number(Platform.Version) < 33) {
+        return;
+      }
+      const storedToken = await AsyncStorage.getItem('fcmToken');
+      if (storedToken) {
+        console.log('Token already exists:', storedToken);
+        return;
+      }
+
+      const permissionStatus = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      console.log(permissionStatus, 'permissionstatus');
+      if (permissionStatus) {
+        console.log('notification permission granted');
+        await messaging().registerDeviceForRemoteMessages();
+        const token = await messaging().getToken();
+        console.log('token', token);
+        await AsyncStorage.setItem('fcmToken', token);
+      } else {
+        // Request notification permission
+        const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+        if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+          // Alert.alert('Notification permission granted');
+        } else {
+          Alert.alert('Notification permission denied');
+        }
+      }
+    };
+    getTheToken();
+  }, []);
+
+
   useEffect(() => {
     const checkUserData = async () => {
       try {
@@ -44,6 +81,8 @@ const App = () => {
     };
     checkUserData();
   }, []);
+  
+
 
   if (!initialRoute) return null;
 

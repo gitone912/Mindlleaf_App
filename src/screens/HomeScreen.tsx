@@ -10,6 +10,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppDispatch } from '../store/hooks';
+import { saveToken } from '../store/slices/notificationSlice';
 
 // Define screen types
 type RootStackParamList = {
@@ -34,21 +36,28 @@ type Action = {
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [userName, setUserName] = useState<string>('');
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const fetchUserName = async () => {
+    const fetchUserDataAndSaveToken = async () => {
       try {
         const userData = await AsyncStorage.getItem('userData');
         if (userData) {
           const parsedData = JSON.parse(userData);
           setUserName(parsedData.name);
+          
+          // Save notification token
+          await dispatch(saveToken({
+            userId: parsedData.user_id,
+            name: parsedData.name
+          })).unwrap();
         }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
+        console.error('Failed to fetch user data or save token:', error);
       }
     };
 
-    fetchUserName();
+    fetchUserDataAndSaveToken();
   }, []);
 
   const actions: Action[] = [

@@ -9,6 +9,7 @@ import journalReducer from "./slices/journalSlice";
 import analyseReducer from "./slices/analyseSlice";
 import editGetJournalReducer from "./slices/editGetJournalSlice";
 import settingsReducer from "./slices/settingsSlice";
+import notificationReducer from './slices/notificationSlice';
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     analyse: analyseReducer,
     editGetJournal: editGetJournalReducer,
     settings: settingsReducer,
+    notification: notificationReducer,
   },
 });
 
