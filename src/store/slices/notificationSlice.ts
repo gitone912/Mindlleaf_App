@@ -7,6 +7,7 @@ export const saveToken = createAsyncThunk(
   async ({ userId, name }: { userId: string, name: string }) => {
     const fcmToken = await AsyncStorage.getItem('fcmToken');
     if (!fcmToken) throw new Error('No FCM token found');
+    console.log(fcmToken,'fcm token sending')
     
     return await saveNotificationToken({ fcmToken, userId, name });
   }
