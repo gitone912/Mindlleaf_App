@@ -21,12 +21,12 @@ import OnboardLanguageSelection from './src/onboarding/onboardLangSettings';
 import Logout from './src/screens/Logout';
 import {PermissionsAndroid, Alert, Platform} from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { withIAPContext } from 'react-native-iap';
+
 const Stack = createStackNavigator();
 
 const App = () => {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
-
-
   useEffect(() => {
     const getTheToken = async () => {
       if (Number(Platform.Version) < 33) {
@@ -112,4 +112,4 @@ const App = () => {
 };
 
 
-export default App;
+export default withIAPContext(App);

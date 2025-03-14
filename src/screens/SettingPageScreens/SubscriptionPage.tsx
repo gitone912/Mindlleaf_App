@@ -1,9 +1,10 @@
 import * as React from "react";
-import { StyleSheet, Text, Pressable, View, ScrollView } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, Pressable, View, ScrollView, Platform } from "react-native";
 
-const Subscription = () => {
+
+const SubscriptionPage = () => {
   const [selectedPlan, setSelectedPlan] = React.useState('free');
-
   const plans = {
     free: {
       name: 'FREE TIER',
@@ -128,4 +129,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Subscription;
+export default SubscriptionPage;
