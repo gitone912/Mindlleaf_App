@@ -6,12 +6,15 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppDispatch } from '../store/hooks';
 import { saveToken } from '../store/slices/notificationSlice';
+import { errorLog } from '../utils';
+import { fetchUserById } from '../store/slices/authSlice';
 
 // Define screen types
 type RootStackParamList = {
@@ -36,6 +39,7 @@ type Action = {
 const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [userName, setUserName] = useState<string>('');
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -46,14 +50,31 @@ const HomeScreen = () => {
           const parsedData = JSON.parse(userData);
           setUserName(parsedData.name);
           
-          // Save notification token
-          await dispatch(saveToken({
-            userId: parsedData.user_id,
-            name: parsedData.name
-          })).unwrap();
+          // Fetch latest user data
+          const response = await dispatch(fetchUserById(parsedData.user_id)).unwrap();
+          if (response.user.subscription === 'freeTier') {
+            Alert.alert(
+              'Free Tier Account',
+              'You are currently on the free tier. Upgrade your subscription to access more features!',
+              [{ text: 'OK' }]
+            );
+          }
+
+          try {
+            await dispatch(saveToken({
+              userId: parsedData.user_id,
+              name: parsedData.name
+            })).unwrap();
+          } catch (tokenError: any) {
+            if (tokenError.message === 'No FCM token found') {
+              console.log('error',tokenError);
+            } else {
+              console.error('Unknown error while saving token:', tokenError);
+            }
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch user data or save token:', error);
+        console.error('Failed to fetch user data:', error);
       }
     };
 
@@ -69,7 +90,7 @@ const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.greeting}>
-        {/* <Text style={styles.day}>Day 44</Text> */}
+        {tokenError && <Text style={styles.errorText}>{tokenError}</Text>}
         <Text style={styles.title}>Hi, {userName}</Text>
         <Text style={styles.subtitle}>Want to Journal Today?.</Text>
       </View>
@@ -139,6 +160,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#A6A6A6',
     fontFamily: 'Inter-Regular',
+  },
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
+    marginBottom: 5,
   },
 });
 

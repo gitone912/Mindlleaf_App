@@ -28,6 +28,7 @@ interface User {
   points: number;
   updated_at: string;
   user_id: string;
+  subscription:string;
 }
 
 interface SigninResponse {

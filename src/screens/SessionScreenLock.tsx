@@ -1,9 +1,11 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { Text, StyleSheet, Image, View, Pressable, ScrollView, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserById } from "../store/slices/authSlice";
 
 // Define the type for the navigation prop
 type SessionStackParamList = {
@@ -20,17 +22,41 @@ type SessionScreenNavigationProp = StackNavigationProp<SessionStackParamList, "S
 
 const SessionScreen = () => {
   const navigation = useNavigation<SessionScreenNavigationProp>();
+  const dispatch = useDispatch();
   const [timeUntilNextJournal, setTimeUntilNextJournal] = useState<string | null>(null);
   const [canJournal, setCanJournal] = useState(true);
+  const user = useSelector((state: any) => state.auth.user);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.user_id) {
+        dispatch(fetchUserById(user.user_id) as any);
+      }
+      checkJournalAvailability();
+    }, [user?.user_id])
+  );
 
   useEffect(() => {
+    if (!user?.subscription) return;
+    
     checkJournalAvailability();
-    const interval = setInterval(checkJournalAvailability, 1000); // Update every second
+    const interval = setInterval(checkJournalAvailability, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user?.subscription]);
 
   const checkJournalAvailability = async () => {
     try {
+      // Always check latest subscription status
+      const currentUser = await AsyncStorage.getItem('userData');
+      const parsedUser = currentUser ? JSON.parse(currentUser) : null;
+      
+      if (parsedUser?.subscription === 'pro' || parsedUser?.subscription === 'gold') {
+        setTimeUntilNextJournal(null);
+        setCanJournal(true);
+        return;
+      }
+
+      // Free tier logic
       const lastJournalTimestamp = await AsyncStorage.getItem('lastJournalTimestamp');
       
       if (lastJournalTimestamp) {
@@ -48,7 +74,6 @@ const SessionScreen = () => {
           lastJournalDate.getDate() < now.getDate();
 
         if (!isLastJournalFromPreviousDay) {
-          // Calculate remaining time until midnight
           const timeDiff = nextMidnight.getTime() - now.getTime();
           const hours = Math.floor(timeDiff / (1000 * 60 * 60));
           const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -72,10 +97,11 @@ const SessionScreen = () => {
   };
 
   const handleNavigate = (screen: keyof SessionStackParamList) => {
-    if (!canJournal) {
+    // Only check journal limit for free tier users
+    if (user?.subscription === 'freeTier' && !canJournal) {
       Alert.alert(
         'Journal Locked',
-        `You've already journaled today. Please come back in ${timeUntilNextJournal}.`,
+        `You've already journaled today. Please upgrade to Pro or Gold for unlimited journaling, or come back in ${timeUntilNextJournal}.`,
         [{ text: 'OK' }]
       );
       return;
