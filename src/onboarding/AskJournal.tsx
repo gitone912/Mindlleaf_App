@@ -35,8 +35,6 @@ const AskJournal = ({ navigation, route }: any) => {
           isOnboarded: true,
           notificationTime: notificationTime,
           notificationDays: notificationDays,
-          points: 15,
-          subscription: "freeTier",
           coverChoice: selectedCover
         };
 

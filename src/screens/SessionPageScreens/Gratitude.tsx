@@ -21,7 +21,7 @@ const Gratitude = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Gratitude</Text>
       <Text style={styles.description}>
-        Practice gratitude by writing about what you're thankful for.
+      Focus on positive aspects of your life by listing things you’re thankful for to cultivate gratitude.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>

@@ -18,7 +18,7 @@ import UserJournals from '../screens/JournalPageScreens/UserJournals';
 import ReadJournal from '../screens/JournalPageScreens/ReadJournal';
 import AITherapy from '../screens/SettingPageScreens/AITherapy';
 import LanguageSelection from '../screens/SettingPageScreens/Language';
-import SubscriptionPage from '../screens/SettingPageScreens/SubscriptionPage';
+import SubscriptionPage from '../screens/SettingPageScreens/BuyLeaves';
 import VoiceSelection from '../screens/SettingPageScreens/Voice';
 import Monologue from '../screens/SessionPageScreens/Monologue';
 import Dialogue from '../screens/SessionPageScreens/Dialogue';
@@ -33,6 +33,7 @@ import PromptJournal from '../screens/SessionPageScreens/PromptJournal';
 import GratitudeJournal from '../screens/SessionPageScreens/GratitudeJournal';
 import MonologueJournal from '../screens/SessionPageScreens/MonologueJournal';
 import DialogueJournal from '../screens/SessionPageScreens/DialogueJournal';
+import { BuySubscriptions } from '../screens/SettingPageScreens/Subscriptions';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -86,6 +87,7 @@ const SettingsStack = () => {
       <Stack.Screen name="Language" component={LanguageSelection} />
       <Stack.Screen name="AICharacter" component={VoiceSelection} />
       <Stack.Screen name="Subscription" component={SubscriptionPage} />
+      <Stack.Screen name="BuySubscriptions" component={BuySubscriptions} />
     </Stack.Navigator>
   );
 };

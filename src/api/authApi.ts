@@ -76,9 +76,7 @@ interface UpdateUserPayload {
   isOnboarded: boolean;
   notificationTime: string;
   notificationDays: string[];
-  points: number;
   coverChoice: string;
-  subscription:string;
 }
 
 export const updateUser = async (payload: UpdateUserPayload): Promise<{ message: string }> => {

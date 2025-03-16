@@ -21,7 +21,7 @@ const Chat = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Chat</Text>
       <Text style={styles.description}>
-        Reflect and express your thoughts freely by speaking to the microphone.
+      Have an interactive chat to discuss emotions, ideas, or challenges with AI.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>

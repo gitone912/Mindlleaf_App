@@ -21,6 +21,7 @@ const AnalyseJournal: React.FC = () => {
   // Add new state for edited journal
   const [isEditing, setIsEditing] = useState(false);
   const [editedJournal, setEditedJournal] = useState('');
+  const [addedActions, setAddedActions] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (currentJournal?.content) {
@@ -62,6 +63,11 @@ const AnalyseJournal: React.FC = () => {
   };
 
   const handleAddTask = async (taskName: string) => {
+    if (addedActions.has(taskName)) {
+      Alert.alert('Already Added', 'This action has already been added to your tasks.');
+      return;
+    }
+
     try {
       // Get user data from AsyncStorage
       const userDataString = await AsyncStorage.getItem('userData');
@@ -88,9 +94,11 @@ const AnalyseJournal: React.FC = () => {
                 await dispatch(createTask({
                   userId,
                   taskName,
-                  completion_points: 5
+                  completion_points: 0
                 })).unwrap();
                 
+                // Add the action to the set of added actions
+                setAddedActions(prev => new Set([...prev, taskName]));
                 Alert.alert('Success', 'Task added successfully!');
               } catch (error: any) {
                 if (error?.message?.includes('Daily task limit reached. You can only create 6 tasks per day.')) {
@@ -304,19 +312,39 @@ const AnalyseJournal: React.FC = () => {
 ) : actions?.recommendedActions ? (
   <>
     <Text style={styles.sectionTitle}>Choose actions to add to your list</Text>
-    {getActionsList().map((action, index) => (
-      <View key={index} style={styles.actionRow}>
-        <View style={styles.textContainer}>
-          <Text style={styles.actionText}>{action}</Text>
+    {getActionsList().map((action, index) => {
+      const isAdded = addedActions.has(action);
+      return (
+        <View key={index} style={styles.actionRow}>
+          <View style={[
+            styles.textContainer,
+            isAdded && styles.addedTextContainer
+          ]}>
+            <Text style={[
+              styles.actionText,
+              isAdded && styles.addedActionText
+            ]}>
+              {action}
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={[
+              styles.addButton,
+              isAdded && styles.addedButton
+            ]} 
+            onPress={() => handleAddTask(action)}
+            disabled={isAdded}
+          >
+            <Text style={[
+              styles.addButtonText,
+              isAdded && styles.addedButtonText
+            ]}>
+              {isAdded ? '✓' : '+'}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-          style={styles.addButton} 
-          onPress={() => handleAddTask(action)}
-        >
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
-      </View>
-    ))}
+      );
+    })}
   </>
 ) : (
   <Text style={styles.noActionsText}>No actions available</Text>
@@ -539,6 +567,20 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
+  },
+  addedTextContainer: {
+    backgroundColor: '#f0f0f0',
+    borderColor: '#ddd',
+  },
+  addedActionText: {
+    color: '#999',
+  },
+  addedButton: {
+    backgroundColor: '#e8e8e8',
+    borderColor: '#ddd',
+  },
+  addedButtonText: {
+    color: '#4CAF50',
   },
 });
 

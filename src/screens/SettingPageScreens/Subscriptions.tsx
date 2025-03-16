@@ -17,7 +17,7 @@ import {
   isPlay,
 } from '../../utils';
 
-export const Subscriptions = () => {
+export const BuySubscriptions = () => {
   const {
     connected,
     subscriptions,

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, Pressable, View, Modal, Linking } from "react-native";
+import { Image, StyleSheet, Text, Pressable, View, Modal, Linking, TextInput, ActivityIndicator } from "react-native";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateUser } from "../api/authApi";
 
 type SettingsStackParamList = {
   SettingsMain: undefined;
@@ -11,6 +12,7 @@ type SettingsStackParamList = {
   AICharacter : undefined;
   Subscription : undefined;
   Logout: undefined;
+  BuySubscriptions: undefined;
 };
 
 type SettingsScreenNavigationProp = StackNavigationProp<SettingsStackParamList, 'SettingsMain'>;
@@ -19,6 +21,10 @@ const SettingsScreen = () => {
   const [userName, setUserName] = useState<string>('');
   const [userEmail, setUserEmail] = useState<string>('');
   const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [updateMessage, setUpdateMessage] = useState<string>('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,6 +42,36 @@ const SettingsScreen = () => {
 
     fetchUserData();
   }, []);
+
+  const handleUpdateName = async () => {
+    setIsLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        const response = await updateUser({
+          userId: parsedData.user_id,
+          name: newName,
+          isOnboarded: parsedData.is_onboarded,
+          notificationTime: parsedData.notification_time,
+          notificationDays: parsedData.notification_days,
+          coverChoice: parsedData.cover_choice
+        });
+        
+        // Update local storage and state with new name
+        parsedData.name = newName;
+        await AsyncStorage.setItem('userData', JSON.stringify(parsedData));
+        setUserName(newName);
+        setUpdateMessage('Name updated successfully');
+        setShowEditModal(false);
+      }
+    } catch (error) {
+      setUpdateMessage('Failed to update name');
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setUpdateMessage(''), 3000);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -58,7 +94,13 @@ const SettingsScreen = () => {
           <Text style={styles.userName}>{userName}</Text>
           <Text style={styles.userEmail}>{userEmail}</Text>
         </View>
-        <Pressable style={styles.editButton}>
+        <Pressable 
+          style={styles.editButton}
+          onPress={() => {
+            setNewName(userName);
+            setShowEditModal(true);
+          }}
+        >
           <Image
             style={styles.editIcon}
             source={require("../assets/settingsIcons/edit.png")}
@@ -81,8 +123,10 @@ const SettingsScreen = () => {
                 navigation.navigate("Language");
               } else if (option.title === "AI Character") {
                 navigation.navigate("AICharacter");
-              } else if (option.title === "Subscription") {
+              } else if (option.title === "Buy Leaves") {
                 navigation.navigate("Subscription");
+              } else if (option.title === "BuySubscriptions") {
+                navigation.navigate("BuySubscriptions");
               } else if (option.title === "Join Discord Community" || 
                         option.title === "Write a review" || 
                         option.title === "Contact support") {
@@ -136,13 +180,64 @@ const SettingsScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Name Edit Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showEditModal}
+        onRequestClose={() => setShowEditModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Name</Text>
+            <TextInput
+              style={styles.nameInput}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="Enter new name"
+            />
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setShowEditModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalButton, styles.updateButton]}
+                onPress={handleUpdateName}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text style={styles.updateButtonText}>Update</Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Update Message */}
+      {updateMessage ? (
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>{updateMessage}</Text>
+        </View>
+      ) : null}
+
     </View>
   );
 };
 
 const menuOptions = [
   {
-    title: "Subscription",
+    title: "Buy Leaves",
+    icon: require("../assets/leaf.png"),
+  },
+  {
+    title: "BuySubscriptions",
     icon: require("../assets/settingsIcons/1.png"),
   },
   {
@@ -308,6 +403,36 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
     textAlign: "center",
+  },
+  nameInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    width: '100%',
+    marginBottom: 20,
+  },
+  updateButton: {
+    backgroundColor: '#4CAF50',
+  },
+  updateButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  messageContainer: {
+    position: 'absolute',
+    top: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  messageText: {
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    color: 'white',
+    padding: 10,
+    borderRadius: 5,
   },
 });
 

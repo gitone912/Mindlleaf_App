@@ -21,7 +21,7 @@ const Type = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Type</Text>
       <Text style={styles.description}>
-        Reflect and express your thoughts freely by speaking to the microphone.
+      Write your thoughts and experiences directly in a text-based format.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>

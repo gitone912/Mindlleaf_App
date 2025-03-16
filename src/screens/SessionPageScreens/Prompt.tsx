@@ -21,7 +21,7 @@ const Prompt = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Prompt</Text>
       <Text style={styles.description}>
-        Express your thoughts through guided prompts.
+      Respond to guided prompts designed to help focus your journaling on specific topics or questions.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>

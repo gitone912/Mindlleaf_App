@@ -18,6 +18,9 @@ import {
   withIAPContext, 
   useIAP 
 } from "react-native-iap";
+import { AppDispatch, RootState } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserById } from '../../store/slices/authSlice';
 
 // Define product SKUs
 const productSkus = [
@@ -28,6 +31,7 @@ const productSkus = [
 
 const SubscriptionPage = () => {
   const [products, setProducts] = useState<any[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const initIAP = async () => {
@@ -103,6 +107,9 @@ const SubscriptionPage = () => {
 
         // Call the update leaves API
         const response = await updateUserLeaves(paymentPayload);
+        if (userData.user_id) {
+                await dispatch(fetchUserById(userData.user_id)); // Fetch updated user data
+              }
         Alert.alert("Success", "Leaves have been added to your account!");
       }
     } catch (error: any) {

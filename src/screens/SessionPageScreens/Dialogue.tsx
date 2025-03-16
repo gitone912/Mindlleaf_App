@@ -21,7 +21,7 @@ const Dialogue = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Dialogue</Text>
       <Text style={styles.description}>
-        Reflect and express your thoughts freely by speaking to the microphone.
+      Engage in a back-and-forth conversation with an AI to explore your thoughts and feelings.
       </Text>
 
       <Pressable style={styles.button} onPress={handleSessionStart}>
