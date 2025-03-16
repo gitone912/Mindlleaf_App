@@ -4,12 +4,14 @@ interface PaymentState {
   isLoading: boolean;
   error: string | null;
   success: boolean;
+  subscriptionStatus: 'none' | 'active' | 'expired';
 }
 
 const initialState: PaymentState = {
   isLoading: false,
   error: null,
   success: false,
+  subscriptionStatus: 'none',
 };
 
 const paymentSlice = createSlice({
@@ -27,8 +29,22 @@ const paymentSlice = createSlice({
       state.success = action.payload;
       state.isLoading = false;
     },
+    setSubscriptionStatus: (state, action: PayloadAction<'none' | 'active' | 'expired'>) => {
+      state.subscriptionStatus = action.payload;
+    },
+    resetPaymentState: (state) => {
+      state.isLoading = false;
+      state.error = null;
+      state.success = false;
+    },
   },
 });
 
-export const { setLoading, setError, setSuccess } = paymentSlice.actions;
+export const { 
+  setLoading, 
+  setError, 
+  setSuccess, 
+  setSubscriptionStatus,
+  resetPaymentState 
+} = paymentSlice.actions;
 export default paymentSlice.reducer;

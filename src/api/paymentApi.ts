@@ -46,3 +46,27 @@ export const updateUserLeaves = async (payload: {
 
   return data;
 };
+
+export const verifySubscription = async (payload: {
+  userId: string;
+  packageName: string;
+  subscriptionName: string;
+  subscriptionId: string;
+  purchaseToken: string;
+  subscriptionExpiry: string;
+}) => {
+  const response = await fetch(`${BASE_URL_AUTH}/v1/iap/verify-subscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to verify subscription');
+  }
+
+  return response.json();
+};
