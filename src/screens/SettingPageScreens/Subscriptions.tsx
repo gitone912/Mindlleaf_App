@@ -232,7 +232,7 @@ export const SubscriptionManager = () => {
           subscriptionId: purchase.productId,
           purchaseToken,
           platform: 'android',
-          subscriptionExpiry:'123456'
+          subscriptionExpiry: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'ddMMyyyy')
         });
         
         return response.success;
