@@ -87,15 +87,8 @@ export const theme = StyleSheet.create({
    */
 
   box: {
-    margin: 20,
-    marginBottom: 5,
-    padding: 20,
-    backgroundColor: colors.white,
-    borderRadius,
-    shadowColor: 'rgba(0, 0, 0, 0.45)',
-    shadowOffset: {height: 16, width: 0},
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+     backgroundColor:'#FCFAF0',
+     paddingBottom:10
   },
 
   button: {

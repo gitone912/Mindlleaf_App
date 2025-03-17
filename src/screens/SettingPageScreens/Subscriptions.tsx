@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator, Alert, Image, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns';
 import {
@@ -427,18 +427,23 @@ export const SubscriptionManager = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={contentContainerStyle}>
+    <ScrollView contentContainerStyle={styles.scrollView}>
       {isLoading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.green} />
+          <ActivityIndicator size="large" color="#D4AF37" />
           <Text style={styles.loadingText}>
             {isRestoring ? 'Restoring subscriptions...' : 'Processing subscription...'}
           </Text>
         </View>
       ) : (
-        <Box>
+        <Box >
           <View style={styles.container}>
-            <Heading copy="Available Subscriptions" />
+            <View style={styles.headerContainer}>
+              <View style={styles.titleWrapper}>
+                <Text style={styles.title}>Premium Subscriptions</Text>
+              </View>
+              <Text style={styles.subtitle}>Choose your plan to unlock all features</Text>
+            </View>
             
             {error && (
               <View style={styles.errorContainer}>
@@ -451,95 +456,174 @@ export const SubscriptionManager = () => {
                 <Text style={styles.noDataText}>No subscriptions available</Text>
               </View>
             ) : (
-              <>
+              <View style={styles.plansContainer}>
                 {subscriptions.map((subscription) => {
-  const owned = ownedSubscriptions.includes(subscription.productId);
-  
-  // Type guard to safely access subscriptionOfferDetails
-  const isAndroidSubscription = subscription.platform === SubscriptionPlatform.android;
-  const subscriptionOfferDetails = isAndroidSubscription 
-    ? (subscription as SubscriptionAndroid).subscriptionOfferDetails 
-    : undefined;
-  
-  const isBasePlan = !subscriptionOfferDetails || 
-                      subscriptionOfferDetails.some(offer => 
-                        offer.offerTags?.includes('BASE_PLAN') || !offer.offerTags?.length);
-  
-  return (
-    <View key={subscription.productId} style={styles.subscriptionCard}>
-      <Text style={styles.planName}>{subscription.title}</Text>
-      <Text style={styles.description}>{subscription.description}</Text>
-      
-      {isPlay && isAndroidSubscription && subscriptionOfferDetails && (
-        <Text style={styles.offerText}>
-          {subscriptionOfferDetails[0]?.pricingPhases?.pricingPhaseList?.[0]?.formattedPrice || ''}
-          {subscriptionOfferDetails[0]?.pricingPhases?.pricingPhaseList?.[0]?.billingPeriod ? 
-            ` / ${subscriptionOfferDetails[0].pricingPhases.pricingPhaseList[0].billingPeriod}` : ''}
-        </Text>
-      )}
-                      
-                      {owned ? (
-                        <View style={styles.subscribedBadge}>
-                          <Text style={styles.subscribedText}>Active</Text>
-                        </View>
-                      ) : (
-                        <View style={styles.subscribeButton}>
-                          <Button
-                            title="Subscribe Now"
-                            onPress={() => handleBuySubscription(subscription.productId)}
-                          />
-                        </View>
-                      )}
-                    </View>
-                  );
-                })}
-              </>
-            )}
-            
-            <View style={styles.restoreContainer}>
-              <View style={styles.restoreButton}>
-                {!(isLoading || isRestoring) ? (
-                  <Button
-                    title="Restore Purchases"
-                    onPress={handleRestorePurchases}
-                  />
-                ) : (
-                  <ActivityIndicator size="small" color={colors.green} />
-                )}
-              </View>
-            </View>
-            
-            {ownedSubscriptions.length > 0 && (
-              <View style={styles.activeSubscriptionsContainer}>
-                <Heading copy="Active Subscriptions" />
-                {ownedSubscriptions.map((productId) => {
-                  const subscription = subscriptions.find(s => s.productId === productId);
-                  if (!subscription) return null;
+                  const owned = ownedSubscriptions.includes(subscription.productId);
+                  const isAndroidSubscription = subscription.platform === SubscriptionPlatform.android;
+                  const subscriptionOfferDetails = isAndroidSubscription 
+                    ? (subscription as SubscriptionAndroid).subscriptionOfferDetails 
+                    : undefined;
                   
                   return (
-                    <View key={`active-${productId}`} style={styles.activeSubscriptionCard}>
-                      <Text style={styles.activePlanName}>{subscription.title}</Text>
-                      <Text style={styles.activeDescription}>{subscription.description}</Text>
-                      <View style={styles.manageButton}>
-                        <Button
-                          title="Manage Subscription"
-                          onPress={() => deepLinkToSubscriptions({ sku: productId })}
-                        />
+                    <View key={subscription.productId} style={styles.planBox}>
+                      <View style={styles.planContent}>
+                        <Text style={styles.planName}>{subscription.title}</Text>
+                        <Text style={styles.description}>{subscription.description}</Text>
+                        
+                        {isPlay && isAndroidSubscription && subscriptionOfferDetails && (
+                          <Text style={styles.offerText}>
+                            {subscriptionOfferDetails[0]?.pricingPhases?.pricingPhaseList?.[0]?.formattedPrice || ''}
+                            {subscriptionOfferDetails[0]?.pricingPhases?.pricingPhaseList?.[0]?.billingPeriod ? 
+                              ` / ${subscriptionOfferDetails[0].pricingPhases.pricingPhaseList[0].billingPeriod}` : ''}
+                          </Text>
+                        )}
+                        
+                        {owned ? (
+                          <View style={styles.subscribedBadge}>
+                            <Text style={styles.subscribedText}>Active</Text>
+                          </View>
+                        ) : (
+                          <TouchableOpacity
+                            style={styles.subscribeButton}
+                            onPress={() => handleBuySubscription(subscription.productId)}
+                          >
+                            <Text style={styles.subscribeButtonText}>Subscribe Now</Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </View>
                   );
                 })}
               </View>
             )}
+            
+            <TouchableOpacity 
+              style={styles.restoreButton}
+              onPress={handleRestorePurchases}
+              disabled={isLoading || isRestoring}
+            >
+              {!(isLoading || isRestoring) ? (
+                <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+              ) : (
+                <ActivityIndicator size="small" color="#D4AF37" />
+              )}
+            </TouchableOpacity>
           </View>
         </Box>
       )}
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
+  scrollView: {
+    flexGrow: 1,
+    backgroundColor: '#FCFAF0',
+    
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor:'#FCFAF0'
+  },
   container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 40,
+    backgroundColor:'#FCFAF0'
+  },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10, // Adjust spacing between image and text
+  },
+  
+  subtitle: {
+    fontSize: 15,
+    color: '#A6A6A6',
+    fontFamily: 'Inter-Regular',
+    marginBottom: 5,
+    letterSpacing: 0.3,
+  },
+  plansContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+  },
+  planBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 15,
     marginBottom: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.3)',
+    shadowColor: '#D4AF37',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  planContent: {
+    alignItems: 'center',
+  },
+  planName: {
+    fontSize: 24,
+    fontFamily: 'Inter-SemiBold',
+    color: '#000',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    width: '100%',
+    marginBottom: 15,
+    fontFamily: 'Inter-Regular',
+    paddingHorizontal: 10,
+  },
+  offerText: {
+    fontSize: 20,
+    color: '#D4AF37',
+    fontFamily: 'Inter-Medium',
+    marginBottom: 15,
+  },
+  subscribeButton: {
+    backgroundColor: '#D4AF37',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginTop: 10,
+  },
+  subscribeButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+  },
+  subscribedBadge: {
+    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10,
+  },
+  subscribedText: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+  },
+  restoreButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#D4AF37',
+  },
+  restoreButtonText: {
+    color: '#D4AF37',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
   centerContainer: {
     flex: 1,
@@ -547,118 +631,61 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  subscriptionCard: {
-    backgroundColor: '#ffeb3b',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  planName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  price: {
-    fontSize: 16,
-    color: '#555',
-    marginTop: 5,
-  },
-  description: {
-    fontSize: 14,
-    color: colors.gray600,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  offerText: {
-    fontSize: 14,
-    color: colors.gray500,
-    fontWeight: '500',
-    marginBottom: 10,
-  },
-  subscribedBadge: {
-    backgroundColor: colors.green,
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    alignSelf: 'center',
-  },
-  subscribedText: {
-    color: 'white',
-    fontWeight: '600',
-  },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: colors.gray600,
-  },
-  errorText: {
-    color: colors.red,
-    fontSize: 16,
+    color: '#666',
+    fontFamily: 'Inter-Regular',
   },
   errorContainer: {
-    backgroundColor: '#ffeeee',
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 10,
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    width: '100%',
   },
-  noDataText: {
+  errorText: {
+    color: '#FF6B6B',
     textAlign: 'center',
-    marginTop: 20,
-    color: colors.gray600,
+    fontFamily: 'Inter-Regular',
   },
   emptyContainer: {
     padding: 20,
     alignItems: 'center',
   },
-  restoreContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  restoreButton: {
-    backgroundColor: colors.blue,
-  },
-  subscribeButton: {
-    width: '80%',
-  },
-  activeSubscriptionsContainer: {
-    marginTop: 30,
-  },
-  activeSubscriptionCard: {
-    backgroundColor: colors.green,
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-  },
-  activePlanName: {
+  noDataText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  activeDescription: {
-    fontSize: 14,
-    color: colors.gray100,
-    marginBottom: 12,
-    textAlign: 'center',
+    color: '#666',
+    fontFamily: 'Inter-Regular',
   },
   button: {
-    backgroundColor: colors.blue,
-    padding: 10,
-    borderRadius: 5,
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#D4AF37',
   },
-  manageButton: {
-    backgroundColor: colors.green,
-    width: '80%',
+  headerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
+    width: '100%',
   },
+  
+  titleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 32,
+    fontFamily: 'Ovo',
+    color: '#000',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    lineHeight: 50, // This helps vertically align with the logo
+  },
+  
 });

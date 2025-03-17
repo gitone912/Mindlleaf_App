@@ -18,7 +18,7 @@ import UserJournals from '../screens/JournalPageScreens/UserJournals';
 import ReadJournal from '../screens/JournalPageScreens/ReadJournal';
 import AITherapy from '../screens/SettingPageScreens/AITherapy';
 import LanguageSelection from '../screens/SettingPageScreens/Language';
-import SubscriptionPage from '../screens/SettingPageScreens/BuyLeaves';
+import BuyLeavesPage from '../screens/SettingPageScreens/BuyLeaves';
 import VoiceSelection from '../screens/SettingPageScreens/Voice';
 import Monologue from '../screens/SessionPageScreens/Monologue';
 import Dialogue from '../screens/SessionPageScreens/Dialogue';
@@ -86,7 +86,7 @@ const SettingsStack = () => {
       <Stack.Screen name="AITherapy" component={AITherapy} />
       <Stack.Screen name="Language" component={LanguageSelection} />
       <Stack.Screen name="AICharacter" component={VoiceSelection} />
-      <Stack.Screen name="Subscription" component={SubscriptionPage} />
+      <Stack.Screen name="Subscription" component={BuyLeavesPage} />
       <Stack.Screen name="BuySubscriptions" component={SubscriptionManager} />
     </Stack.Navigator>
   );
