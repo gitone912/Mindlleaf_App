@@ -33,7 +33,7 @@ import PromptJournal from '../screens/SessionPageScreens/PromptJournal';
 import GratitudeJournal from '../screens/SessionPageScreens/GratitudeJournal';
 import MonologueJournal from '../screens/SessionPageScreens/MonologueJournal';
 import DialogueJournal from '../screens/SessionPageScreens/DialogueJournal';
-import { BuySubscriptions } from '../screens/SettingPageScreens/Subscriptions';
+import { SubscriptionManager } from '../screens/SettingPageScreens/Subscriptions';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -87,7 +87,7 @@ const SettingsStack = () => {
       <Stack.Screen name="Language" component={LanguageSelection} />
       <Stack.Screen name="AICharacter" component={VoiceSelection} />
       <Stack.Screen name="Subscription" component={SubscriptionPage} />
-      <Stack.Screen name="BuySubscriptions" component={BuySubscriptions} />
+      <Stack.Screen name="BuySubscriptions" component={SubscriptionManager} />
     </Stack.Navigator>
   );
 };

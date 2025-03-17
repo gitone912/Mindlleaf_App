@@ -54,6 +54,7 @@ export const verifySubscription = async (payload: {
   subscriptionId: string;
   purchaseToken: string;
   subscriptionExpiry: string;
+  platform:string;
 }) => {
   const response = await fetch(`${BASE_URL_AUTH}/v1/iap/verify-subscription`, {
     method: 'POST',
