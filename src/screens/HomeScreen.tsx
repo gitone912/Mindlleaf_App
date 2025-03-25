@@ -40,6 +40,7 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [userName, setUserName] = useState<string>('');
   const [tokenError, setTokenError] = useState<string | null>(null);
+  const [remainingDays, setRemainingDays] = useState<number>(0);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -60,9 +61,15 @@ const HomeScreen = () => {
             );
           }
           if (response.user.subscription === '7daysTrial') {
+            const createdAt = new Date(response.user.created_at);
+            const now = new Date();
+            const trialEndDate = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const daysRemaining = Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            setRemainingDays(Math.max(0, daysRemaining));
+
             Alert.alert(
               '7 Days Free Trial',
-              'You are currently on the 7 days free trial. Upgrade your subscription after 7 days to access same features!',
+              `You are currently on the 7 days free trial. You have ${daysRemaining} days remaining.\n\nUpgrade your subscription before trial expires to continue accessing all features!`,
               [{ text: 'OK' }]
             );
           }
