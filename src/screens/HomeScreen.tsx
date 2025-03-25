@@ -59,6 +59,13 @@ const HomeScreen = () => {
               [{ text: 'OK' }]
             );
           }
+          if (response.user.subscription === '7daysTrial') {
+            Alert.alert(
+              '7 Days Free Trial',
+              'You are currently on the 7 days free trial. Upgrade your subscription after 7 days to access same features!',
+              [{ text: 'OK' }]
+            );
+          }
 
           try {
             await dispatch(saveToken({

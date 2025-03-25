@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { signupUser, signinUser, initiateSignup, verifyOTP, googleAuth, getUserById } from "../../api/authApi";
+import { signupUser, signinUser, initiateSignup, verifyOTP, googleAuth, getUserById, updateUserName } from "../../api/authApi";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { notifyPointsUpdated } from '../../hooks/usePoints';
 
@@ -113,6 +113,18 @@ export const fetchUserById = createAsyncThunk(
   }
 );
 
+export const updateName = createAsyncThunk(
+  "auth/updateName",
+  async (payload: { userId: string; name: string }, { rejectWithValue }) => {
+    try {
+      const response = await updateUserName(payload);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update name");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -196,6 +208,20 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.user = action.payload.user;
+      })
+      .addCase(updateName.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateName.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user.name = action.payload.updates.name;
+        }
+      })
+      .addCase(updateName.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

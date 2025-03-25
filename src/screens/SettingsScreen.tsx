@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateUser } from "../api/authApi";
+import { updateUserName } from "../api/authApi";
 
 type SettingsStackParamList = {
   SettingsMain: undefined;
@@ -25,6 +26,7 @@ const SettingsScreen = () => {
   const [newName, setNewName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [updateMessage, setUpdateMessage] = useState<string>('');
+  const [userSubscription, setUserSubscription] = useState<string>('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,6 +36,8 @@ const SettingsScreen = () => {
           const parsedData = JSON.parse(userData);
           setUserName(parsedData.name);
           setUserEmail(parsedData.email);
+          // Set subscription plan
+          setUserSubscription(parsedData.subscription || 'Free Tier');
         }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -49,13 +53,9 @@ const SettingsScreen = () => {
       const userData = await AsyncStorage.getItem('userData');
       if (userData) {
         const parsedData = JSON.parse(userData);
-        const response = await updateUser({
+        const response = await updateUserName({
           userId: parsedData.user_id,
-          name: newName,
-          isOnboarded: parsedData.is_onboarded,
-          notificationTime: parsedData.notification_time,
-          notificationDays: parsedData.notification_days,
-          coverChoice: parsedData.cover_choice
+          name: newName
         });
         
         // Update local storage and state with new name
@@ -93,6 +93,7 @@ const SettingsScreen = () => {
         <View style={styles.userInfoTextContainer}>
           <Text style={styles.userName}>{userName}</Text>
           <Text style={styles.userEmail}>{userEmail}</Text>
+          <Text style={styles.userSubscription}>{userSubscription}</Text>
         </View>
         <Pressable 
           style={styles.editButton}
@@ -308,6 +309,12 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 12, // Reduced font size
     color: "#6d6d6d",
+  },
+  userSubscription: {
+    fontSize: 12,
+    color: '#4CAF50',
+    fontWeight: '500',
+    marginTop: 2,
   },
   editButton: {
     padding: 4, // Reduced padding

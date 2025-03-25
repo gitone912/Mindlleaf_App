@@ -6,6 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById } from "../store/slices/authSlice";
+import { format, parse } from 'date-fns';
 
 // Define the type for the navigation prop
 type SessionStackParamList = {
@@ -50,7 +51,23 @@ const SessionScreen = () => {
       const currentUser = await AsyncStorage.getItem('userData');
       const parsedUser = currentUser ? JSON.parse(currentUser) : null;
       
-      if (parsedUser?.subscription === 'pro' || parsedUser?.subscription === 'gold') {
+      // Check subscription expiry
+      if (parsedUser?.expiryDate) {
+        const expiryDate = parse(parsedUser.expiryDate, 'ddMMyyyy', new Date());
+        const today = new Date();
+        
+        // Set time to midnight for accurate date comparison
+        today.setHours(0, 0, 0, 0);
+        expiryDate.setHours(0, 0, 0, 0);
+        
+        if (expiryDate <= today) {
+          setTimeUntilNextJournal('Subscription expired');
+          setCanJournal(false);
+          return;
+        }
+      }
+      
+      if (parsedUser?.subscription === 'Mindleaf Pro (Tier 1) (Mindleaf)' || parsedUser?.subscription === 'Mindleaf Pro (Tier 1) (Mindleaf)' || parsedUser?.subscription === 'lifetime' || parsedUser?.subscription === '7daysTrial') {
         setTimeUntilNextJournal(null);
         setCanJournal(true);
         return;

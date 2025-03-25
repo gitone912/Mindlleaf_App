@@ -223,7 +223,7 @@ export const SubscriptionManager = () => {
         
         // Get subscription details from purchase or metadata
         const subscription = subscriptions.find(s => s.productId === purchase.productId);
-        const subscriptionName = subscription?.title || 'pro';
+        const subscriptionName = subscription?.title || purchase.productId;
         
         const response = await verifySubscription({
           userId,
@@ -444,12 +444,6 @@ export const SubscriptionManager = () => {
               </View>
               <Text style={styles.subtitle}>Choose your plan to unlock all features</Text>
             </View>
-            
-            {error && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            )}
   
             {subscriptions.length === 0 ? (
               <View style={styles.emptyContainer}>

@@ -109,3 +109,21 @@ export const googleAuth = async (idToken: string): Promise<GoogleAuthResponse> =
     throw error;
   }
 };
+
+interface UpdateNamePayload {
+  userId: string;
+  name: string;
+}
+
+interface UpdateNameResponse {
+  message: string;
+  updates: {
+    name: string;
+    updated_at: string;
+  };
+}
+
+export const updateUserName = async (payload: UpdateNamePayload): Promise<UpdateNameResponse> => {
+  const response = await axios.post(`${BASE_URL_AUTH}/v1/users/update-name`, payload);
+  return response.data;
+};

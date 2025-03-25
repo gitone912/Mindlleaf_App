@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUserById } from '../api/authApi';
 
 const OldUserLanding = ({ navigation }: any) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -8,8 +9,18 @@ const OldUserLanding = ({ navigation }: any) => {
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
-        const userData = await AsyncStorage.getItem('userData');
-        const parsedData = userData ? JSON.parse(userData) : null;
+        let userData = await AsyncStorage.getItem('userData');
+        let parsedData = userData ? JSON.parse(userData) : null;
+
+        // Fetch latest user data if user_id exists
+        if (parsedData?.user_id) {
+          const response = await getUserById(parsedData.user_id);
+          if (response.user) {
+            await AsyncStorage.setItem('userData', JSON.stringify(response.user));
+            parsedData = response.user; // Update parsed data with fresh data
+          }
+        }
+
         const isOnboarded = parsedData?.is_onboarded || parsedData?.isOnboarded || false;
 
         // Start logo animation
