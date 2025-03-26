@@ -126,12 +126,13 @@ const SettingsScreen = () => {
                 navigation.navigate("AICharacter");
               } else if (option.title === "Buy Leaves") {
                 navigation.navigate("Subscription");
-              } else if (option.title === "BuySubscriptions") {
+              } else if (option.title === "Subscriptions") {
                 navigation.navigate("BuySubscriptions");
+              } else if (option.title === "Contact support") {
+                Linking.openURL('mailto:support@eternalmindlabs.xyz');
               } else if (option.title === "Join Discord Community" || 
-                        option.title === "Write a review" || 
-                        option.title === "Contact support") {
-                Linking.openURL('https://discord.gg/ZXegVRduP3');
+                        option.title === "Write a review") {
+                Linking.openURL('https://discord.gg/d449ZjXEQU');
               }
             }}
           >
@@ -238,7 +239,7 @@ const menuOptions = [
     icon: require("../assets/leaf.png"),
   },
   {
-    title: "BuySubscriptions",
+    title: "Subscriptions",
     icon: require("../assets/settingsIcons/1.png"),
   },
   {

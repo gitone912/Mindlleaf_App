@@ -443,6 +443,7 @@ export const SubscriptionManager = () => {
                 <Text style={styles.title}>Premium Subscriptions</Text>
               </View>
               <Text style={styles.subtitle}>Choose your plan to unlock all features</Text>
+              <Text style={styles.subtitle}>all plans are monthly: P1M - Per 1 month</Text>
             </View>
   
             {subscriptions.length === 0 ? (

@@ -106,7 +106,7 @@ const HomeScreen = () => {
       <View style={styles.greeting}>
         {tokenError && <Text style={styles.errorText}>{tokenError}</Text>}
         <Text style={styles.title}>Hi, {userName}</Text>
-        <Text style={styles.subtitle}>Want to Journal Today?.</Text>
+        <Text style={styles.subtitle}>How is Your Mind Today?</Text>
       </View>
       <View style={styles.actionsContainer}>
         {actions.map((action) => (
