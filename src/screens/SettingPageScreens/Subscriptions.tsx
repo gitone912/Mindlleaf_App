@@ -395,6 +395,33 @@ export const SubscriptionManager = () => {
     }
   };
 
+  // Add this helper function before the return statement
+  const getFormattedDescription = (subscription: { title: string; description: string }) => {
+    switch (subscription.title) {
+      case 'Mindleaf Pro (Tier 1)':
+        return [
+          'Unlimited text-based journaling',
+          '10 mins / month voice-based journaling',
+          'Access to Reports',
+          'Access to Analytics',
+          'Access to Forum',
+          'Free 5 leaves per month'
+        ].join('\n');
+      case 'Mindleaf Gold (Tier 2)':
+        return [
+          'Unlimited text-based journaling',
+          '30 mins/ month voice-based journaling',
+          'Access to Reports',
+          'Access to Analytics',
+          'Access to Forum',
+          'Access to Void',
+          'Access to Meditation'
+        ].join('\n');
+      default:
+        return subscription.description;
+    }
+  };
+
   if (isInitializing) {
     return (
       <View style={styles.centerContainer}>
@@ -463,7 +490,9 @@ export const SubscriptionManager = () => {
                     <View key={subscription.productId} style={styles.planBox}>
                       <View style={styles.planContent}>
                         <Text style={styles.planName}>{subscription.title}</Text>
-                        <Text style={styles.description}>{subscription.description}</Text>
+                        <Text style={[styles.description, { textAlign: 'left' }]}>
+                          {getFormattedDescription(subscription)}
+                        </Text>
                         
                         {isPlay && isAndroidSubscription && subscriptionOfferDetails && (
                           <Text style={styles.offerText}>
