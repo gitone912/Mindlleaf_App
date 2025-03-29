@@ -36,6 +36,10 @@ import DialogueJournal from '../screens/SessionPageScreens/DialogueJournal';
 import { SubscriptionManager } from '../screens/SettingPageScreens/Subscriptions';
 
 import ForumScreen from '../screens/HomePageScreens/Forum';
+import VoidScreen from '../screens/HomePageScreens/Void';
+import MeditationScreen from '../screens/HomePageScreens/Meditation';
+import CoursesScreen from '../screens/HomePageScreens/Courses';
+import CrisisScreen from '../screens/HomePageScreens/Crisis';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -77,6 +81,10 @@ const HomeStack = () => {
       <Stack.Screen name="Therapy" component={TherapyScreen} />
       <Stack.Screen name="Mood" component={MoodScreen} />
       <Stack.Screen name="Forum" component={ForumScreen} />
+      <Stack.Screen name="Void" component={VoidScreen} />
+      <Stack.Screen name="Meditation" component={MeditationScreen} />
+      <Stack.Screen name="Courses" component={CoursesScreen} />
+      <Stack.Screen name="Crisis" component={CrisisScreen} />
     </Stack.Navigator>
   );
 };
