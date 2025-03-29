@@ -35,6 +35,8 @@ import MonologueJournal from '../screens/SessionPageScreens/MonologueJournal';
 import DialogueJournal from '../screens/SessionPageScreens/DialogueJournal';
 import { SubscriptionManager } from '../screens/SettingPageScreens/Subscriptions';
 
+import ForumScreen from '../screens/HomePageScreens/Forum';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -74,6 +76,7 @@ const HomeStack = () => {
       <Stack.Screen name="Mind" component={MindScreen} />
       <Stack.Screen name="Therapy" component={TherapyScreen} />
       <Stack.Screen name="Mood" component={MoodScreen} />
+      <Stack.Screen name="Forum" component={ForumScreen} />
     </Stack.Navigator>
   );
 };

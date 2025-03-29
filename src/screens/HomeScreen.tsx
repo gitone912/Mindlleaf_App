@@ -23,6 +23,12 @@ type RootStackParamList = {
   Mind: undefined;
   Therapy: undefined;
   Mood: undefined;
+  Forum:undefined;
+  Void:undefined;
+  Meditation:undefined;
+  Courses:undefined;
+  Crisis:undefined;
+
 };
 
 // Define navigation prop type for HomeScreen
@@ -96,10 +102,15 @@ const HomeScreen = () => {
   }, []);
 
   const actions: Action[] = [
-    { id: '1', title: 'Actions', image: require('../assets/actions.png'), screen: 'Action' },
-    { id: '2', title: 'Insights', image: require('../assets/mind.png'), screen: 'Mind' },
-    { id: '3', title: 'Therapy', image: require('../assets/therapy.png'), screen: 'Therapy' },
-    { id: '4', title: 'Report', image: require('../assets/mood.png'), screen: 'Mood' },
+    { id: '1', title: 'Actions', image: require('../assets/home/actions.png'), screen: 'Action' },
+    { id: '2', title: 'Insights', image: require('../assets/home/mind.png'), screen: 'Mind' },
+    { id: '3', title: 'Therapy', image: require('../assets/home/therapy.png'), screen: 'Therapy' },
+    { id: '4', title: 'Report', image: require('../assets/home/mood.png'), screen: 'Mood' },
+    { id: '5', title: 'Forum', image: require('../assets/home/forum.png'), screen: 'Forum' },
+    { id: '6', title: 'Void', image: require('../assets/home/void.png'), screen: 'Void' },
+    { id: '7', title: 'Meditation', image: require('../assets/home/meditation.png'), screen: 'Meditation' },
+    { id: '8', title: 'Courses', image: require('../assets/home/courses.png'), screen: 'Courses' },
+    { id: '9', title: 'Crisis', image: require('../assets/home/crisis.png'), screen: 'Crisis' }
   ];
   return (
     <ScrollView style={styles.container}>
