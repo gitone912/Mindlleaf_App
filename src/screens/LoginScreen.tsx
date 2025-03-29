@@ -10,6 +10,7 @@ const LoginPage = ({ navigation }: any) => {
   const { user, isNewUser } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [hasHandledNavigation, setHasHandledNavigation] = React.useState(false);
 
   React.useEffect(() => {
     GoogleSignin.configure({
@@ -20,14 +21,15 @@ const LoginPage = ({ navigation }: any) => {
   }, []);
 
   React.useEffect(() => {
-    if (user) {
+    if (user && !hasHandledNavigation) {
+      setHasHandledNavigation(true);
       if (isNewUser || !user.is_onboarded) {
-        navigation.navigate("HIW");
+        navigation.navigate("HIW1");
       } else {
         navigation.navigate("Main");
       }
     }
-  }, [user, isNewUser]);
+  }, [user, isNewUser, hasHandledNavigation]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
